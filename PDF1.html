@@ -12,7 +12,7 @@
             background: #f0f2f5;
         }
 
-        /* 初始加载动画 */
+        /* Loadin */
         #splash {
             position: fixed;
             top: 50%;
@@ -23,13 +23,13 @@
             transition: opacity 1s;
         }
 
-        /* 主内容容器 */
+        /* Main container */
         .main-content {
             opacity: 0;
             transition: opacity 0.5s;
         }
 
-        /* 各模块基础样式 */
+        /* Modules*/
         .module {
             position: fixed;
             background: white;
@@ -71,7 +71,7 @@
             width: 300px;
         }
 
-        /* PDF列表样式 */
+        /* PDFList */
         .pdf-item {
             padding: 12px;
             margin: 8px 0;
@@ -91,20 +91,20 @@
     </style>
 </head>
 <body>
-    <!-- 初始加载动画 -->
+    <!-- Pre Load animation -->
     <div id="splash">
         <img src="scp1.gif" alt="Welcome" style="height: 200px;">
         <h2 style="color: #666; margin-top: 20px;">Loading OS...</h2>
     </div>
 
-    <!-- 主内容 -->
+    <!-- Main Part -->
     <div class="main-content">
-        <!-- 左上角Logo -->
-        <a href="Login.html" class="module" id="logo">
-            <img src="Logo.png" alt="返回首页" style="width: 100%">
+        <!-- Top Left Logo -->
+        <a href="index.html" class="module" id="logo">
+            <img src="Logo.png" alt="Back to Main page" style="width: 100%">
         </a>
 
-        <!-- PDF列表 -->
+        <!-- PDF List -->
         <div class="module" id="pdf-list">
             <h3>File List</h3>
             <div class="pdf-list">
@@ -114,12 +114,12 @@
             </div>
         </div>
 
-        <!-- PDF查看器 -->
+        <!-- PDF Viewer -->
         <div class="module" id="pdf-viewer">
             <embed id="pdf-frame" src="" type="application/pdf" width="100%" height="100%">
         </div>
 
-        <!-- 右下信息框 -->
+        <!-- Information Tab -->
         <div class="module" id="info-box">
             <h3>OS Info</h3>
             <p>Current Version：0.0.1</p>
@@ -133,41 +133,41 @@
     </div>
 
     <script>
-        // 初始化流程
+        // P1
         window.onload = () => {
-            // 第一阶段：显示初始动画
+            // Entry
             setTimeout(() => {
                 document.getElementById('splash').style.opacity = 1;
             }, 1000);
 
-            // 第二阶段：隐藏初始动画，显示主内容
+            // Hide Logo
             setTimeout(() => {
                 document.getElementById('splash').style.opacity = 0;
 
                 setTimeout(() => {
                     document.querySelector('.main-content').style.opacity = 1;
 
-                    // 激活第一个PDF项
+                    // Check First PDF
                     document.querySelector('.pdf-item').classList.add('active');
                     loadPDF(document.querySelector('.pdf-item').dataset.file);
-                }, 1000); // 半秒后显示主内容
-            }, 3000); // 初始动画持续2秒
+                }, 1000); // Display Main Part
+            }, 3000); // 2s of waiting
 
-            // PDF列表点击事件
+            // PDFList click
             document.querySelectorAll('.pdf-item').forEach(item => {
                 item.addEventListener('click', function () {
-                    // 移除所有激活状态
+                    // Remove all active status
                     document.querySelectorAll('.pdf-item').forEach(i =>
                         i.classList.remove('active'));
-                    // 设置当前激活
+                    // Set Current active
                     this.classList.add('active');
-                    // 加载PDF
+                    // Load PDF
                     loadPDF(this.dataset.file);
                 });
             });
         }
 
-        // PDF加载函数
+        // PDF Load function
         function loadPDF(filename) {
             const viewer = document.getElementById('pdf-frame');
             viewer.src = `docs/${filename}#toolbar=0&navpanes=0`;
