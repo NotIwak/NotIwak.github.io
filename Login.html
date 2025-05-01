@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login in Page</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background:white
+        }
+
+        #gif-container {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: 1s ease-in-out;
+            opacity: 0;
+        }
+
+        #gif {
+            max-width: 70%;
+            max-height: 60%;
+            transition: inherit;
+        }
+
+        #temp-text {
+            position: fixed;
+            bottom: 30%;
+            width: 100%;
+            text-align: center;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            font-size: 1.5em;
+            color: black;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .module {
+            position: fixed;
+            opacity: 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            transition: all 0.8s ease-out;
+        }
+
+        #text1 {
+            top: 20px;
+            left: 20px;
+            box-shadow: none !important;
+        }
+
+        #text2 {
+            bottom: 20px;
+            right: 20px;
+            box-shadow: none !important;
+        }
+
+        #login-module {
+            width: 300px;
+            left: 50%;
+            margin-left: -150px;
+            top: 70vh;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            border: 2px solid #007bff;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+            button:hover {
+                transform: scale(1.05);
+            }
+    </style>
+</head>
+<body>
+    <div id="gif-container">
+        <img id="gif" src="scp1.gif" alt="Main Animation">
+    </div>
+
+    <div id="temp-text">Starting System...</div>
+
+    <div class="module" id="text1">
+        <h3>Site-Virtus</h3>
+        <h2>Administrative Department</h2>
+        <hr>
+        <h2>Main Database OS</h2>
+        <p>Alpha0.1</p>
+    </div>
+
+    <div class="module" id="text2">
+        <h2>Powered by R.A.I.S.A</h2>
+        <hr>
+        <h3>Maintained by Iwak</h3>
+    </div>
+
+    <div class="module" id="login-module">
+        <div class="login-form">
+            <h2>Permission Verification</h2>
+            <input type="text" id="username" placeholder="Codename">
+            <input type="text" id="password" placeholder="Password">
+            <button onclick="checkCredentials()">Access</button>
+        </div>
+    </div>
+
+    <script>
+        const PRESET_TEXT = '1';
+        let animationTimeout;
+
+        // Hide all elements
+        document.querySelectorAll('#gif-container, .module, #temp-text').forEach(el => {
+            el.style.opacity = 0;
+        });
+
+        // P1 Display GIF after 1s
+        setTimeout(() => {
+            document.getElementById('gif-container').style.opacity = 1;
+            document.getElementById('temp-text').style.opacity = 1;
+        }, 1000);
+
+        // Phase 2: after 5Secs
+        setTimeout(() => {
+            // Hide Temp Text
+            document.getElementById('temp-text').style.opacity = 0;
+
+            // Move GIF
+            document.getElementById('gif-container').style.transform = 'translateY(-26%)'; // Adjust GIF Potision here.
+
+            // Display all module
+            document.querySelectorAll('.module').forEach(module => {
+                module.style.opacity = 1;
+                module.style.transform = 'translateY(0)';
+            });
+
+            // Set Login module Position
+            const gifRect = document.getElementById('gif').getBoundingClientRect();
+            const loginModule = document.getElementById('login-module');
+            loginModule.style.top = `${gifRect.bottom - 190}px`;
+        }, 4000);
+
+        // Verify Function
+        function checkCredentials() {
+            const input = document.getElementById('password').value;
+            if (input === PRESET_TEXT) {
+                alert('Access Granted');
+                window.location.href = "PDF1.html";
+                // Jump to another page
+            } else {
+                alert('Access Denied');
+                document.getElementById('password').value = '';
+            }
+        }
+        // "This is Diaster. I'll never do such things again" -Iwak
+        // Clear Timer
+        window.addEventListener('beforeunload', () => {
+            clearTimeout(animationTimeout);
+        });
+    </script>
+</body>
+</html>

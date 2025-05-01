@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Viewer</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+        }
+
+        /* 初始加载动画 */
+        #splash {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+
+        /* 主内容容器 */
+        .main-content {
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        /* 各模块基础样式 */
+        .module {
+            position: fixed;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        #text1 {
+            top: 20px;
+            left: 200px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        #logo {
+            top: 20px;
+            left: 20px;
+            width: 120px;
+            padding: 0;
+        }
+
+        #pdf-list {
+            top: 160px;
+            left: 20px;
+            width: 200px;
+            bottom: 20px;
+        }
+
+        #pdf-viewer {
+            top: 160px;
+            left: 240px;
+            right: 20px;
+            bottom: 20px;
+        }
+
+        #info-box {
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+        }
+
+        /* PDF列表样式 */
+        .pdf-item {
+            padding: 12px;
+            margin: 8px 0;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+            .pdf-item:hover {
+                background: #f8f9fa;
+            }
+
+            .pdf-item.active {
+                background: #e9f5ff;
+                border-left: 4px solid #1890ff;
+            }
+    </style>
+</head>
+<body>
+    <!-- 初始加载动画 -->
+    <div id="splash">
+        <img src="scp1.gif" alt="Welcome" style="height: 200px;">
+        <h2 style="color: #666; margin-top: 20px;">Loading OS...</h2>
+    </div>
+
+    <!-- 主内容 -->
+    <div class="main-content">
+        <!-- 左上角Logo -->
+        <a href="Login.html" class="module" id="logo">
+            <img src="logo.png" alt="返回首页" style="width: 100%">
+        </a>
+
+        <!-- PDF列表 -->
+        <div class="module" id="pdf-list">
+            <h3>File List</h3>
+            <div class="pdf-list">
+                <div class="pdf-item" data-file="doc1.pdf">Sector 3 Standard Protocol</div>
+                <div class="pdf-item" data-file="doc2.pdf">Event Protocol-1</div>
+                <div class="pdf-item" data-file="doc3.pdf">Council Protocol-1</div>
+            </div>
+        </div>
+
+        <!-- PDF查看器 -->
+        <div class="module" id="pdf-viewer">
+            <embed id="pdf-frame" src="" type="application/pdf" width="100%" height="100%">
+        </div>
+
+        <!-- 右下信息框 -->
+        <div class="module" id="info-box">
+            <h3>OS Info</h3>
+            <p>Current Version：0.0.1</p>
+            <p>Last Update：2025-05-01</p>
+        
+        <div class="module" id="text1">
+            <h2>Administrative Department-Main Database OS</h2>
+        </div>
+        
+        </div>
+    </div>
+
+    <script>
+        // 初始化流程
+        window.onload = () => {
+            // 第一阶段：显示初始动画
+            setTimeout(() => {
+                document.getElementById('splash').style.opacity = 1;
+            }, 1000);
+
+            // 第二阶段：隐藏初始动画，显示主内容
+            setTimeout(() => {
+                document.getElementById('splash').style.opacity = 0;
+
+                setTimeout(() => {
+                    document.querySelector('.main-content').style.opacity = 1;
+
+                    // 激活第一个PDF项
+                    document.querySelector('.pdf-item').classList.add('active');
+                    loadPDF(document.querySelector('.pdf-item').dataset.file);
+                }, 1000); // 半秒后显示主内容
+            }, 3000); // 初始动画持续2秒
+
+            // PDF列表点击事件
+            document.querySelectorAll('.pdf-item').forEach(item => {
+                item.addEventListener('click', function () {
+                    // 移除所有激活状态
+                    document.querySelectorAll('.pdf-item').forEach(i =>
+                        i.classList.remove('active'));
+                    // 设置当前激活
+                    this.classList.add('active');
+                    // 加载PDF
+                    loadPDF(this.dataset.file);
+                });
+            });
+        }
+
+        // PDF加载函数
+        function loadPDF(filename) {
+            const viewer = document.getElementById('pdf-frame');
+            viewer.src = `docs/${filename}#toolbar=0&navpanes=0`;
+        }
+    </script>
+</body>
+</html>
