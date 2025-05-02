@@ -1,184 +1,712 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login in Page</title>
+    <title>SV-AD-DataBse</title>
     <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            font-family: Arial, sans-serif;
-            background:white
+        :root {
+            --primary-color: #ffffff;
+            --accent-color: #4a90e2;
+            --text-color: #2a3142;
+            --border-color: #d1d5db;
+            --glow-color: rgba(74, 144, 226, 0.3);
         }
 
-        #gif-container {
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--primary-color);
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            color: var(--text-color);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 网格背景 */
+        body::before {
+            content: '';
             position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, rgba(74, 144, 226, 0.08) 1px, transparent 1px) 0 0 / 50px 50px,
+                linear-gradient(rgba(74, 144, 226, 0.08) 1px, transparent 1px) 0 0 / 50px 50px,
+                linear-gradient(125deg, rgba(74, 144, 226, 0.12) 0%, transparent 40%),
+                linear-gradient(45deg, transparent 60%, rgba(74, 144, 226, 0.12) 100%);
+            animation: backgroundShift 15s ease-in-out infinite alternate;
+            z-index: -2;
+        }
+
+        /* 扫描线效果 */
+        body::after {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                transparent,
+                rgba(74, 144, 226, 0.15) 50%,
+                transparent
+            );
+            animation: scanline 6s linear infinite;
+            z-index: -1;
+            pointer-events: none;
+            mix-blend-mode: overlay;
+        }
+
+        /* 背景光效 */
+        .background-glow {
+            position: fixed;
+            width: 800px;
+            height: 800px;
+            border-radius: 50%;
+            background: radial-gradient(
+                circle,
+                rgba(74, 144, 226, 0.15) 0%,
+                rgba(74, 144, 226, 0.08) 30%,
+                transparent 70%
+            );
+            filter: blur(30px);
+            z-index: -3;
+            animation: glowMove 15s ease-in-out infinite;
+            mix-blend-mode: screen;
+        }
+
+        /* 添加额外的扫描线 */
+        .scan-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                transparent 0%,
+                rgba(74, 144, 226, 0.05) 0.5%,
+                transparent 1%
+            );
+            background-size: 100% 4px;
+            animation: scanEffect 10s linear infinite;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.7;
+        }
+
+        /* 添加浮动粒子效果 */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            opacity: 0;
+            animation: float 12s infinite linear;
+            box-shadow: 0 0 10px var(--accent-color);
+        }
+
+        .particle:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; width: 8px; height: 8px; }
+        .particle:nth-child(2) { top: 60%; left: 30%; animation-delay: 2s; width: 5px; height: 5px; }
+        .particle:nth-child(3) { top: 40%; left: 70%; animation-delay: 4s; width: 7px; height: 7px; }
+        .particle:nth-child(4) { top: 80%; left: 50%; animation-delay: 6s; width: 6px; height: 6px; }
+        .particle:nth-child(5) { top: 30%; left: 90%; animation-delay: 8s; width: 8px; height: 8px; }
+        .particle:nth-child(6) { top: 70%; left: 20%; animation-delay: 1s; width: 7px; height: 7px; }
+        .particle:nth-child(7) { top: 50%; left: 80%; animation-delay: 3s; width: 5px; height: 5px; }
+        .particle:nth-child(8) { top: 25%; left: 40%; animation-delay: 5s; width: 6px; height: 6px; }
+
+        .container {
             width: 100vw;
             height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            transition: 1s ease-in-out;
+            justify-content: flex-start;
+            padding-top: 50px;
+        }
+
+        .intro-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             opacity: 0;
+            animation: fadeIn 1s 2s forwards;
+            margin-bottom: 30px;
         }
 
-        #gif {
-            max-width: 70%;
-            max-height: 60%;
-            transition: inherit;
+        .logo {
+            width: 200px;
+            height: auto;
+            margin-bottom: 20px;
+            position: relative;
+            animation: logoFloat 3s ease-in-out infinite;
         }
 
-        #temp-text {
-            position: fixed;
-            bottom: 30%;
-            width: 100%;
+        .intro-text {
+            font-size: 1.6em;
             text-align: center;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-            font-size: 1.5em;
-            color: black;
-            opacity: 0;
-            transition: opacity 0.5s;
+            margin-top: 25px;
+            opacity: 1;
+            animation: fadeOut 1s 7s forwards;
+            font-weight: 600;
+            color: var(--accent-color);
+            text-shadow: 
+                0 0 10px rgba(74, 144, 226, 0.5),
+                0 0 20px rgba(74, 144, 226, 0.3);
+            letter-spacing: 1px;
+            line-height: 1.4;
         }
 
-        .module {
+        /* 为第二行文字单独设置样式 */
+        .intro-text span {
+            display: block;
+            margin-top: 15px;
+            font-size: 0.8em;
+            font-weight: 500;
+            color: var(--text-color);
+            text-shadow: 
+                0 0 8px rgba(74, 144, 226, 0.4),
+                0 0 16px rgba(74, 144, 226, 0.2);
+        }
+
+        /* 添加角落文本框样式 */
+        .corner-text {
             position: fixed;
-            opacity: 0;
-            padding: 20px;
             background: rgba(255, 255, 255, 0.9);
-            border-radius: 10px;
-            transition: all 0.8s ease-out;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 4px;
+            color: var(--text-color);
+            max-width: 250px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            animation: fadeIn 1s 7s forwards;
+            backdrop-filter: blur(10px);
+            line-height: 1.5;
         }
 
-        #text1 {
+        /* 特别为左上角文本框调整宽度 */
+        .top-left {
+            max-width: 300px;
+        }
+
+        /* 主标题样式 */
+        .corner-text > :first-child {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-bottom: 5px;
+            white-space: nowrap;
+        }
+
+        /* 次要文本样式 */
+        .corner-text > :nth-child(2) {
+            font-size: 1.2em;
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+
+        /* 版本号和签名样式 */
+        .corner-text > :last-child {
+            font-size: 0.8em;
+            color: rgba(42, 49, 66, 0.8);
+            font-family: 'Consolas', monospace;
+        }
+
+        /* 特定调整右下角文本 */
+        .bottom-right > :first-child {
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .bottom-right > :last-child {
+            font-style: italic;
+            margin-top: 5px;
+        }
+
+        /* 添加悬停效果 */
+        .corner-text:hover {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            transform: translateY(-1px);
+            transition: all 0.3s ease;
+        }
+
+        .top-left {
             top: 20px;
             left: 20px;
-            box-shadow: none !important;
         }
 
-        #text2 {
+        .bottom-right {
             bottom: 20px;
             right: 20px;
-            box-shadow: none !important;
         }
 
-        #login-module {
-            width: 300px;
-            left: 50%;
-            margin-left: -150px;
-            top: 70vh;
+        .login-section {
+            opacity: 0;
+            animation: fadeIn 1s 7s forwards;
+            margin-top: 20px;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2.5em;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .login-container::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 1px solid var(--accent-color);
+            border-radius: 8px;
+            animation: borderPulse 2s infinite;
+            pointer-events: none;
         }
 
         .login-form {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 1.2em;
+            min-width: 300px;
         }
 
-        input[type="text"] {
-            padding: 10px;
-            border: 2px solid #007bff;
-            border-radius: 6px;
-            font-size: 16px;
+        input, select {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 0.8em;
+            border-radius: 4px;
+            font-family: inherit;
+            box-shadow: none;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px var(--glow-color);
         }
 
         button {
-            padding: 12px 24px;
-            background: linear-gradient(135deg, #007bff, #0056b3);
+            background: var(--accent-color);
             color: white;
             border: none;
-            border-radius: 6px;
+            padding: 0.8em;
+            border-radius: 4px;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.3s;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
         }
 
-            button:hover {
-                transform: scale(1.05);
+        button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 0%,
+                rgba(255, 255, 255, 0.1) 50%,
+                transparent 100%
+            );
+            transform: rotate(45deg);
+            animation: buttonGlow 2s infinite;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        @keyframes moveUp {
+            to { transform: translateY(-100px); }
+        }
+
+        @keyframes scanEffect {
+            from {
+                transform: translateY(0);
             }
+            to {
+                transform: translateY(100%);
+            }
+        }
+
+        @keyframes borderPulse {
+            0%, 100% {
+                border-color: var(--accent-color);
+                box-shadow: 0 0 10px var(--glow-color);
+            }
+            50% {
+                border-color: transparent;
+                box-shadow: none;
+            }
+        }
+
+        @keyframes buttonGlow {
+            0% {
+                transform: translate(-50%, -50%) rotate(45deg);
+            }
+            100% {
+                transform: translate(150%, 150%) rotate(45deg);
+            }
+        }
+
+        @keyframes logoFloat {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: var(--accent-color) }
+        }
+
+        @keyframes backgroundShift {
+            0% {
+                background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+            }
+            100% {
+                background-position: 50px 50px, 50px 50px, 100% 100%, 100% 100%;
+            }
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        @keyframes scanline {
+            0% {
+                transform: rotate(0deg) translateY(-50%);
+                opacity: 0.8;
+            }
+            50% {
+                opacity: 0.4;
+            }
+            100% {
+                transform: rotate(360deg) translateY(-50%);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes glowMove {
+            0%, 100% {
+                top: -40%;
+                left: -40%;
+                opacity: 0.8;
+            }
+            25% {
+                top: -40%;
+                left: 80%;
+                opacity: 0.6;
+            }
+            50% {
+                top: 80%;
+                left: 80%;
+                opacity: 0.8;
+            }
+            75% {
+                top: 80%;
+                left: -40%;
+                opacity: 0.6;
+            }
+        }
+
+        /* 数据流动效果 */
+        .matrix-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .data-stream {
+            position: absolute;
+            color: rgba(74, 144, 226, 0.25);
+            font-family: 'Consolas', monospace;
+            font-size: 14px;
+            line-height: 1.2;
+            white-space: nowrap;
+            animation: dataFlow linear infinite;
+            text-shadow: 0 0 5px rgba(74, 144, 226, 0.3);
+        }
+
+        .data-stream::before {
+            content: attr(data-text);
+        }
+
+        /* 添加首字符高亮效果 */
+        .data-stream::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            color: rgba(74, 144, 226, 0.8);
+            text-shadow: 0 0 8px rgba(74, 144, 226, 0.5);
+            animation: fadeOut 2s linear infinite;
+            width: 1ch;
+            overflow: hidden;
+        }
+
+        @keyframes fadeOut {
+            0%, 30% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        @keyframes dataFlow {
+            from {
+                transform: translateY(-100%);
+            }
+            to {
+                transform: translateY(100vh);
+            }
+        }
+
+        /* Logo样式 */
+        .logo {
+            width: 200px;
+            height: auto;
+            margin-bottom: 20px;
+            position: relative;
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+
+        /* 右上角Logo */
+        .corner-logo {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 80px;
+            height: auto;
+            opacity: 0;
+            animation: 
+                fadeIn 1s 7s forwards,
+                cornerLogoFloat 3s ease-in-out infinite;
+            z-index: 1000;
+        }
+
+        @keyframes cornerLogoFloat {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-10px) rotate(360deg);
+            }
+        }
     </style>
 </head>
 <body>
-    <div id="gif-container">
-        <img id="gif" src="scp1.gif" alt="Main Animation">
+    <div class="matrix-rain" id="matrixRain"></div>
+    <div class="scan-effect"></div>
+    <div class="background-glow"></div>
+    <div class="background-glow" style="animation-delay: -5s; opacity: 0.9;"></div>
+    <div class="background-glow" style="animation-delay: -10s; opacity: 0.8;"></div>
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
     </div>
 
-    <div id="temp-text">Starting System...</div>
+    <img src="Logo.png" alt="Corner Logo" class="corner-logo">
 
-    <div class="module" id="text1">
-        <h3>Site-Virtus</h3>
-        <h2>Administrative Department</h2>
-        <hr>
-        <h2>Main Database OS</h2>
-        <p>Version 0.0.1</p>
+    <div class="corner-text top-left" id="top-left-text">
+        <div>Administrative Department</div>
+        <div>Main Database OS</div>
+        <div>-Version 0.1</div>
     </div>
 
-    <div class="module" id="text2">
-        <h2>Powered by R.A.I.S.A</h2>
-        <hr>
-        <h3>Maintained by Iwak</h3>
+    <div class="corner-text bottom-right" id="bottom-right-text">
+        <div>Powered by R.A.I.S.A</div>
+        <div>Maintained by Iwak</div>
     </div>
 
-    <div class="module" id="login-module">
-        <div class="login-form">
-            <h2>Permission Verification</h2>
-            <input type="text" id="username" placeholder="Codename">
-            <input type="text" id="password" placeholder="Password">
-            <button onclick="checkCredentials()">Access</button>
+    <div class="container">
+        <div class="intro-section">
+            <img src="Logo.png" alt="SCP Foundation Logo" class="logo">
+            <div class="intro-text">
+                Welcome To Foundation Database<br>
+                <span>Prepare For Premission Verification...</span>
+            </div>
+        </div>
+
+        <div class="login-section">
+            <div class="login-container">
+                <div class="login-form">
+                    <h2>Premission Verification System</h2>
+                    <input type="text" id="username" placeholder="Codename" autocomplete="off">
+                    <input type="password" id="password" placeholder="Password" autocomplete="off">
+                    <select id="clearance-level">
+                        <option value="1">Level 1</option>
+                        <option value="2">Level 2</option>
+                        <option value="3">Level 3</option>
+                        <option value="4">Level 4</option>
+                        <option value="5">Level 5</option>
+                    </select>
+                    <button onclick="authenticate()">Access</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        const PRESET_TEXT = 'O57ADKey';
-        let animationTimeout;
+        async function authenticate() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const clearanceLevel = document.getElementById('clearance-level').value;
 
-        // Hide all elements
-        document.querySelectorAll('#gif-container, .module, #temp-text').forEach(el => {
-            el.style.opacity = 0;
-        });
+            if (!username || !password) {
+                alert('Please enter complete verification information');
+                return;
+            }
 
-        // P1 Display GIF after 1s
-        setTimeout(() => {
-            document.getElementById('gif-container').style.opacity = 1;
-            document.getElementById('temp-text').style.opacity = 1;
-        }, 1000);
-
-        // Phase 2: after 5Secs
-        setTimeout(() => {
-            // Hide Temp Text
-            document.getElementById('temp-text').style.opacity = 0;
-
-            // Move GIF
-            document.getElementById('gif-container').style.transform = 'translateY(-26%)'; // Adjust GIF Potision here.
-
-            // Display all module
-            document.querySelectorAll('.module').forEach(module => {
-                module.style.opacity = 1;
-                module.style.transform = 'translateY(0)';
-            });
-
-            // Set Login module Position
-            const gifRect = document.getElementById('gif').getBoundingClientRect();
-            const loginModule = document.getElementById('login-module');
-            loginModule.style.top = `${gifRect.bottom - 190}px`;
-        }, 4000);
-
-        // Verify Function
-        function checkCredentials() {
-            const input = document.getElementById('password').value;
-            if (input === PRESET_TEXT) {
-                alert('Access Granted');
-                window.location.href = "PDF1.html";
-                // Jump to another page
-            } else {
-                alert('Access Denied');
-                document.getElementById('password').value = '';
+            // 模拟验证过程
+            try {
+                // 这里添加一个简单的演示验证
+                // 在实际应用中，这里应该是与后端API的真实验证交互
+                const isValid = username.length > 3 && password.length > 3;
+                
+                if (isValid) {
+                    // 添加过渡动画
+                    document.body.style.opacity = '0';
+                    document.body.style.transition = 'opacity 1s ease';
+                    
+                    // 等待动画完成后跳转
+                    setTimeout(() => {
+                        window.location.href = 'PDF1.html';
+                    }, 1000);
+                } else {
+                    alert('Verification failed: Insufficient permissions or incorrect verification information');
+                }
+            } catch (error) {
+                console.error('Authentication error:', error);
+                alert('System error, please try again later');
             }
         }
-        // "This is Diaster. I'll never do such things again" -Iwak
-        // Clear Timer
-        window.addEventListener('beforeunload', () => {
-            clearTimeout(animationTimeout);
+
+        // 添加键盘事件支持
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                authenticate();
+            }
         });
+
+        // 保留输入框聚焦效果
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.style.transform = 'scale(1.02)';
+            });
+            input.addEventListener('blur', () => {
+                input.style.transform = 'scale(1)';
+            });
+        });
+
+        // 数据流动效果
+        function createDataStream() {
+            const container = document.getElementById('matrixRain');
+            const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const numbers = '0123456789';
+            const characters = letters + numbers;
+            const streamCount = 35;  // 增加数据流的数量
+
+            for (let i = 0; i < streamCount; i++) {
+                const stream = document.createElement('div');
+                stream.className = 'data-stream';
+                
+                // 生成随机字符串
+                let dataText = '';
+                const length = 8 + Math.floor(Math.random() * 12);  // 8-20个字符
+                for (let j = 0; j < length; j++) {
+                    // 增加字母出现的概率
+                    const useLetters = Math.random() > 0.3;  // 70%概率使用字母
+                    if (useLetters) {
+                        dataText += letters[Math.floor(Math.random() * letters.length)];
+                    } else {
+                        dataText += numbers[Math.floor(Math.random() * numbers.length)];
+                    }
+                }
+                stream.setAttribute('data-text', dataText);
+
+                // 随机位置和动画持续时间
+                const duration = 8 + Math.random() * 12;  // 8-20秒，稍微加快速度
+                const delay = -Math.random() * 15;  // 随机延迟
+                const left = Math.random() * 100;  // 随机水平位置
+
+                stream.style.cssText = `
+                    left: ${left}%;
+                    animation-duration: ${duration}s;
+                    animation-delay: ${delay}s;
+                    font-size: ${12 + Math.random() * 4}px;  // 12-16px的随机大小
+                `;
+
+                container.appendChild(stream);
+
+                // 当动画结束时重新创建新的数据流
+                stream.addEventListener('animationend', () => {
+                    container.removeChild(stream);
+                    createDataStream();
+                });
+            }
+        }
+
+        // 初始化数据流
+        createDataStream();
     </script>
 </body>
 </html>
