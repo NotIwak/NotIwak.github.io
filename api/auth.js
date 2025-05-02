@@ -8,26 +8,26 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 1. 读取 XLSX 文件
+    // 1. Read XLSX
     const filePath = path.join(process.cwd(), 'data', 'Data.xlsx');
     const fileBuffer = await fs.readFile(filePath);
     const workbook = XLSX.read(fileBuffer);
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const users = XLSX.utils.sheet_to_json(sheet);
 
-    // 2. 获取前端提交的凭证
+    // 2. RECIVED REQ FROM HTML
     const { username, password } = req.body;
 
-    // 3. 验证用户
+    // 3. VERIFY
     const user = users.find(u => 
       u.username === username && u.password === password
     );
 
     if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: 'Access Denied.Invaild Information.' });
     }
 
-    // 4. 返回成功响应（移除密码字段）
+    // 4. RETURN IF SUCCESS
     const { password: _, ...safeUser } = user;
     res.status(200).json({ user: safeUser });
 
