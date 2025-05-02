@@ -23,7 +23,7 @@
             position: relative;
         }
 
-            /* 网格背景 */
+            /* Background */
             body::before {
                 content: '';
                 position: fixed;
@@ -36,7 +36,7 @@
                 z-index: -2;
             }
 
-            /* 扫描线效果 */
+            /* Scan */
             body::after {
                 content: '';
                 position: fixed;
@@ -51,7 +51,7 @@
                 mix-blend-mode: overlay;
             }
 
-        /* 背景光效 */
+        /* BG Light effect */
         .background-glow {
             position: fixed;
             width: 800px;
@@ -64,7 +64,7 @@
             mix-blend-mode: screen;
         }
 
-        /* 添加额外的扫描线 */
+        /* Extra Scan */
         .scan-effect {
             position: fixed;
             top: 0;
@@ -79,7 +79,7 @@
             opacity: 0.7;
         }
 
-        /* 添加浮动粒子效果 */
+        /* Particles */
         .particles {
             position: fixed;
             top: 0;
@@ -205,7 +205,7 @@
             line-height: 1.4;
         }
 
-            /* 为第二行文字单独设置样式 */
+            /* For Intro Text */
             .intro-text span {
                 display: block;
                 margin-top: 15px;
@@ -215,7 +215,7 @@
                 text-shadow: 0 0 8px rgba(74, 144, 226, 0.4), 0 0 16px rgba(74, 144, 226, 0.2);
             }
 
-        /* 添加角落文本框样式 */
+        /* Text.Bottom Right */
         .corner-text {
             position: fixed;
             background: rgba(255, 255, 255, 0.9);
@@ -231,12 +231,12 @@
             line-height: 1.5;
         }
 
-        /* 特别为左上角文本框调整宽度 */
+        /* Adjust width */
         .top-left {
             max-width: 300px;
         }
 
-        /* 主标题样式 */
+        /* Main title */
         .corner-text > :first-child {
             font-size: 1.1em;
             font-weight: 600;
@@ -245,21 +245,21 @@
             white-space: nowrap;
         }
 
-        /* 次要文本样式 */
+        /* Text */
         .corner-text > :nth-child(2) {
             font-size: 1.2em;
             font-weight: 500;
             margin-bottom: 3px;
         }
 
-        /* 版本号和签名样式 */
+        /* Version */
         .corner-text > :last-child {
             font-size: 0.8em;
             color: rgba(42, 49, 66, 0.8);
             font-family: 'Consolas', monospace;
         }
 
-        /* 特定调整右下角文本 */
+        /* Adjust BR */
         .bottom-right > :first-child {
             color: var(--text-color);
             font-weight: 500;
@@ -270,7 +270,7 @@
             margin-top: 5px;
         }
 
-        /* 添加悬停效果 */
+        /* Hover effect */
         .corner-text:hover {
             background: rgba(255, 255, 255, 0.95);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
@@ -523,7 +523,7 @@
             }
         }
 
-        /* 数据流动效果 */
+        /* DataFlow Effect */
         .matrix-rain {
             position: fixed;
             top: 0;
@@ -550,7 +550,7 @@
                 content: attr(data-text);
             }
 
-            /* 添加首字符高亮效果 */
+            /* Highlight */
             .data-stream::after {
                 content: attr(data-text);
                 position: absolute;
@@ -583,7 +583,7 @@
             }
         }
 
-        /* Logo样式 */
+        /* Logo */
         .logo {
             width: 200px;
             height: auto;
@@ -592,7 +592,7 @@
             animation: logoFloat 3s ease-in-out infinite;
         }
 
-        /* 右上角Logo */
+        /* Top Right Logo */
         .corner-logo {
             position: fixed;
             top: 20px;
@@ -674,7 +674,7 @@
     </div>
 
     <script>
-        // 用户数据库
+        // Abandoned
         /* const userDatabase = {
             "user1": { password: "pass1", userlevel: 1 },
             "user2": { password: "pass2", userlevel: 2 },
@@ -683,7 +683,7 @@
             "user5": { password: "pass5", userlevel: 5 }
         }; */
 
-        // 重定向函数
+        // Redirect
         function redirectUserBasedOnLevel(userLevel) {
             switch (userLevel) {
                 case 1:
@@ -717,7 +717,7 @@
             }
 
             try {
-                // 调用Vercel Serverless API
+                // Vercel Serverless API
                 const response = await fetch('/api/auth', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -727,11 +727,11 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    // 保留原有过渡动画
+                    // remain old move
                     document.body.style.opacity = '0';
                     document.body.style.transition = 'opacity 1s ease';
 
-                    // 根据后端返回的等级跳转
+                    // Redirect
                     setTimeout(() => {
                         redirectUserBasedOnLevel(data.user.level);
                     }, 1000);
@@ -744,12 +744,12 @@
             }
         }
 
-        // 保留原有事件监听
+        // listen
         document.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') authenticate();
         });
 
-        // 保留输入框聚焦效果
+        // Focus Effect
         const inputs = document.querySelectorAll('input');
         inputs.forEach(input => {
             input.addEventListener('focus', () => {
@@ -759,15 +759,15 @@
                 input.style.transform = 'scale(1)';
             });
         });
-        /*/ 登录验证函数 Abandoned.
+        /*/  Abandoned.
         function login(username, password) {
-            // 检查用户是否存在
+            // Non
             if (userDatabase[username]) {
-                // 验证密码
+                // a
                 if (userDatabase[username].password === password) {
-                    // 获取用户等级
+                    // a
                     const userLevel = userDatabase[username].level;
-                    // 根据用户等级重定向
+                    // a
                     redirectUserBasedOnLevel(userLevel);
                 } else {
                     alert("Incorrect password");
@@ -777,12 +777,12 @@
             }
         }
 
-        // 登录按钮事件处理程序
+        // a
         document.getElementById('loginButton').addEventListener('click', function () {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
-            // 调用登录函数
+            // a
             login(username, password);
         });
 
@@ -796,18 +796,18 @@
                 return;
             }
 
-            // 模拟验证过程
+            // a
             try {
-                // 这里添加一个简单的演示验证
-                // 在实际应用中，这里应该是与后端API的真实验证交互
+                // a
+                // a
                 const isValid = username.length > 3 && password.length > 3;
 
                 if (isValid) {
-                    // 添加过渡动画
+                    // a
                     document.body.style.opacity = '0';
                     document.body.style.transition = 'opacity 1s ease';
 
-                    // 等待动画完成后跳转
+                    // redirect b
                     setTimeout(() => {
                         redirectUserBasedOnLevel(clearanceLevel);
                     }, 1000);
@@ -820,14 +820,14 @@
             }
         }
 
-        // 添加键盘事件支持
+        // suppport of keyboard-
         document.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 authenticate();
             }
         });
 
-        // 保留输入框聚焦效果
+        // focus effect
         const inputs = document.querySelectorAll('input, select');
         inputs.forEach(input => {
             input.addEventListener('focus', () => {
@@ -838,24 +838,24 @@
             });
         }); */
 
-        // 数据流动效果
+        // dataflow
         function createDataStream() {
             const container = document.getElementById('matrixRain');
             const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
             const numbers = '0123456789';
             const characters = letters + numbers;
-            const streamCount = 35;  // 增加数据流的数量
+            const streamCount = 35;  // add more
 
             for (let i = 0; i < streamCount; i++) {
                 const stream = document.createElement('div');
                 stream.className = 'data-stream';
 
-                // 生成随机字符串
+                // random
                 let dataText = '';
-                const length = 8 + Math.floor(Math.random() * 12);  // 8-20个字符
+                const length = 8 + Math.floor(Math.random() * 12);  // 8-20words
                 for (let j = 0; j < length; j++) {
-                    // 增加字母出现的概率
-                    const useLetters = Math.random() > 0.3;  // 70%概率使用字母
+                    // add letters
+                    const useLetters = Math.random() > 0.3;  // 70%letter
                     if (useLetters) {
                         dataText += letters[Math.floor(Math.random() * letters.length)];
                     } else {
@@ -864,21 +864,21 @@
                 }
                 stream.setAttribute('data-text', dataText);
 
-                // 随机位置和动画持续时间
-                const duration = 8 + Math.random() * 12;  // 8-20秒，稍微加快速度
-                const delay = -Math.random() * 15;  // 随机延迟
-                const left = Math.random() * 100;  // 随机水平位置
+                // random positions
+                const duration = 8 + Math.random() * 12;  // speed up
+                const delay = -Math.random() * 15;  // random delay
+                const left = Math.random() * 100;  // random position
 
                 stream.style.cssText = `
                         left: ${left}%;
                         animation-duration: ${duration}s;
                         animation-delay: ${delay}s;
-                        font-size: ${12 + Math.random() * 4}px;  // 12-16px的随机大小
+                        font-size: ${12 + Math.random() * 4}px;  // 12-16px of random size
                     `;
 
                 container.appendChild(stream);
 
-                // 当动画结束时重新创建新的数据流
+                // create new data flow
                 stream.addEventListener('animationend', () => {
                     container.removeChild(stream);
                     createDataStream();
@@ -886,16 +886,16 @@
             }
         }
 
-        // 初始化数据流
+        // start data flow
         createDataStream();
 
-        // 示例：获取用户等级的函数
+        // a
         function getUserLevel(username) {
-            // 这里添加获取用户等级的逻辑
-            // 返回1到5之间的数字
-            // 例如：
+            // a
+            // a
+            // a
             // return userDatabase[username].level;
-            return 1; // 这里返回示例值
+            return 1; // abandoned
         }
     </script>
 </body>
