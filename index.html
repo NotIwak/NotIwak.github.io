@@ -23,41 +23,33 @@
             position: relative;
         }
 
-        /* 网格背景 */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                linear-gradient(90deg, rgba(74, 144, 226, 0.08) 1px, transparent 1px) 0 0 / 50px 50px,
-                linear-gradient(rgba(74, 144, 226, 0.08) 1px, transparent 1px) 0 0 / 50px 50px,
-                linear-gradient(125deg, rgba(74, 144, 226, 0.12) 0%, transparent 40%),
-                linear-gradient(45deg, transparent 60%, rgba(74, 144, 226, 0.12) 100%);
-            animation: backgroundShift 15s ease-in-out infinite alternate;
-            z-index: -2;
-        }
+            /* 网格背景 */
+            body::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, rgba(74, 144, 226, 0.08) 1px, transparent 1px) 0 0 / 50px 50px, linear-gradient(rgba(74, 144, 226, 0.08) 1px, transparent 1px) 0 0 / 50px 50px, linear-gradient(125deg, rgba(74, 144, 226, 0.12) 0%, transparent 40%), linear-gradient(45deg, transparent 60%, rgba(74, 144, 226, 0.12) 100%);
+                animation: backgroundShift 15s ease-in-out infinite alternate;
+                z-index: -2;
+            }
 
-        /* 扫描线效果 */
-        body::after {
-            content: '';
-            position: fixed;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                transparent,
-                rgba(74, 144, 226, 0.15) 50%,
-                transparent
-            );
-            animation: scanline 6s linear infinite;
-            z-index: -1;
-            pointer-events: none;
-            mix-blend-mode: overlay;
-        }
+            /* 扫描线效果 */
+            body::after {
+                content: '';
+                position: fixed;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: linear-gradient( transparent, rgba(74, 144, 226, 0.15) 50%, transparent );
+                animation: scanline 6s linear infinite;
+                z-index: -1;
+                pointer-events: none;
+                mix-blend-mode: overlay;
+            }
 
         /* 背景光效 */
         .background-glow {
@@ -65,12 +57,7 @@
             width: 800px;
             height: 800px;
             border-radius: 50%;
-            background: radial-gradient(
-                circle,
-                rgba(74, 144, 226, 0.15) 0%,
-                rgba(74, 144, 226, 0.08) 30%,
-                transparent 70%
-            );
+            background: radial-gradient( circle, rgba(74, 144, 226, 0.15) 0%, rgba(74, 144, 226, 0.08) 30%, transparent 70% );
             filter: blur(30px);
             z-index: -3;
             animation: glowMove 15s ease-in-out infinite;
@@ -84,11 +71,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: repeating-linear-gradient(
-                transparent 0%,
-                rgba(74, 144, 226, 0.05) 0.5%,
-                transparent 1%
-            );
+            background: repeating-linear-gradient( transparent 0%, rgba(74, 144, 226, 0.05) 0.5%, transparent 1% );
             background-size: 100% 4px;
             animation: scanEffect 10s linear infinite;
             pointer-events: none;
@@ -118,14 +101,69 @@
             box-shadow: 0 0 10px var(--accent-color);
         }
 
-        .particle:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; width: 8px; height: 8px; }
-        .particle:nth-child(2) { top: 60%; left: 30%; animation-delay: 2s; width: 5px; height: 5px; }
-        .particle:nth-child(3) { top: 40%; left: 70%; animation-delay: 4s; width: 7px; height: 7px; }
-        .particle:nth-child(4) { top: 80%; left: 50%; animation-delay: 6s; width: 6px; height: 6px; }
-        .particle:nth-child(5) { top: 30%; left: 90%; animation-delay: 8s; width: 8px; height: 8px; }
-        .particle:nth-child(6) { top: 70%; left: 20%; animation-delay: 1s; width: 7px; height: 7px; }
-        .particle:nth-child(7) { top: 50%; left: 80%; animation-delay: 3s; width: 5px; height: 5px; }
-        .particle:nth-child(8) { top: 25%; left: 40%; animation-delay: 5s; width: 6px; height: 6px; }
+            .particle:nth-child(1) {
+                top: 20%;
+                left: 10%;
+                animation-delay: 0s;
+                width: 8px;
+                height: 8px;
+            }
+
+            .particle:nth-child(2) {
+                top: 60%;
+                left: 30%;
+                animation-delay: 2s;
+                width: 5px;
+                height: 5px;
+            }
+
+            .particle:nth-child(3) {
+                top: 40%;
+                left: 70%;
+                animation-delay: 4s;
+                width: 7px;
+                height: 7px;
+            }
+
+            .particle:nth-child(4) {
+                top: 80%;
+                left: 50%;
+                animation-delay: 6s;
+                width: 6px;
+                height: 6px;
+            }
+
+            .particle:nth-child(5) {
+                top: 30%;
+                left: 90%;
+                animation-delay: 8s;
+                width: 8px;
+                height: 8px;
+            }
+
+            .particle:nth-child(6) {
+                top: 70%;
+                left: 20%;
+                animation-delay: 1s;
+                width: 7px;
+                height: 7px;
+            }
+
+            .particle:nth-child(7) {
+                top: 50%;
+                left: 80%;
+                animation-delay: 3s;
+                width: 5px;
+                height: 5px;
+            }
+
+            .particle:nth-child(8) {
+                top: 25%;
+                left: 40%;
+                animation-delay: 5s;
+                width: 6px;
+                height: 6px;
+            }
 
         .container {
             width: 100vw;
@@ -162,24 +200,20 @@
             animation: fadeOut 1s 7s forwards;
             font-weight: 600;
             color: var(--accent-color);
-            text-shadow: 
-                0 0 10px rgba(74, 144, 226, 0.5),
-                0 0 20px rgba(74, 144, 226, 0.3);
+            text-shadow: 0 0 10px rgba(74, 144, 226, 0.5), 0 0 20px rgba(74, 144, 226, 0.3);
             letter-spacing: 1px;
             line-height: 1.4;
         }
 
-        /* 为第二行文字单独设置样式 */
-        .intro-text span {
-            display: block;
-            margin-top: 15px;
-            font-size: 0.8em;
-            font-weight: 500;
-            color: var(--text-color);
-            text-shadow: 
-                0 0 8px rgba(74, 144, 226, 0.4),
-                0 0 16px rgba(74, 144, 226, 0.2);
-        }
+            /* 为第二行文字单独设置样式 */
+            .intro-text span {
+                display: block;
+                margin-top: 15px;
+                font-size: 0.8em;
+                font-weight: 500;
+                color: var(--text-color);
+                text-shadow: 0 0 8px rgba(74, 144, 226, 0.4), 0 0 16px rgba(74, 144, 226, 0.2);
+            }
 
         /* 添加角落文本框样式 */
         .corner-text {
@@ -270,15 +304,15 @@
             backdrop-filter: blur(10px);
         }
 
-        .login-container::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border: 1px solid var(--accent-color);
-            border-radius: 8px;
-            animation: borderPulse 2s infinite;
-            pointer-events: none;
-        }
+            .login-container::after {
+                content: '';
+                position: absolute;
+                inset: 0;
+                border: 1px solid var(--accent-color);
+                border-radius: 8px;
+                animation: borderPulse 2s infinite;
+                pointer-events: none;
+            }
 
         .login-form {
             display: flex;
@@ -298,11 +332,11 @@
             transition: all 0.3s ease;
         }
 
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px var(--glow-color);
-        }
+            input:focus, select:focus {
+                outline: none;
+                border-color: var(--accent-color);
+                box-shadow: 0 0 0 3px var(--glow-color);
+            }
 
         button {
             background: var(--accent-color);
@@ -317,41 +351,49 @@
             overflow: hidden;
         }
 
-        button::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                45deg,
-                transparent 0%,
-                rgba(255, 255, 255, 0.1) 50%,
-                transparent 100%
-            );
-            transform: rotate(45deg);
-            animation: buttonGlow 2s infinite;
-        }
+            button::after {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: linear-gradient( 45deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100% );
+                transform: rotate(45deg);
+                animation: buttonGlow 2s infinite;
+            }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
         }
 
         @keyframes moveUp {
-            to { transform: translateY(-100px); }
+            to {
+                transform: translateY(-100px);
+            }
         }
 
         @keyframes scanEffect {
             from {
                 transform: translateY(0);
             }
+
             to {
                 transform: translateY(100%);
             }
@@ -362,6 +404,7 @@
                 border-color: var(--accent-color);
                 box-shadow: 0 0 10px var(--glow-color);
             }
+
             50% {
                 border-color: transparent;
                 box-shadow: none;
@@ -372,6 +415,7 @@
             0% {
                 transform: translate(-50%, -50%) rotate(45deg);
             }
+
             100% {
                 transform: translate(150%, 150%) rotate(45deg);
             }
@@ -381,25 +425,37 @@
             0%, 100% {
                 transform: translateY(0);
             }
+
             50% {
                 transform: translateY(-10px);
             }
         }
 
         @keyframes typing {
-            from { width: 0 }
-            to { width: 100% }
+            from {
+                width: 0
+            }
+
+            to {
+                width: 100%
+            }
         }
 
         @keyframes blink-caret {
-            from, to { border-color: transparent }
-            50% { border-color: var(--accent-color) }
+            from, to {
+                border-color: transparent
+            }
+
+            50% {
+                border-color: var(--accent-color)
+            }
         }
 
         @keyframes backgroundShift {
             0% {
                 background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%;
             }
+
             100% {
                 background-position: 50px 50px, 50px 50px, 100% 100%, 100% 100%;
             }
@@ -410,12 +466,15 @@
                 transform: translateY(0) translateX(0);
                 opacity: 0;
             }
+
             10% {
                 opacity: 0.7;
             }
+
             90% {
                 opacity: 0.7;
             }
+
             100% {
                 transform: translateY(-100vh) translateX(100px);
                 opacity: 0;
@@ -427,9 +486,11 @@
                 transform: rotate(0deg) translateY(-50%);
                 opacity: 0.8;
             }
+
             50% {
                 opacity: 0.4;
             }
+
             100% {
                 transform: rotate(360deg) translateY(-50%);
                 opacity: 0.8;
@@ -442,16 +503,19 @@
                 left: -40%;
                 opacity: 0.8;
             }
+
             25% {
                 top: -40%;
                 left: 80%;
                 opacity: 0.6;
             }
+
             50% {
                 top: 80%;
                 left: 80%;
                 opacity: 0.8;
             }
+
             75% {
                 top: 80%;
                 left: -40%;
@@ -482,32 +546,38 @@
             text-shadow: 0 0 5px rgba(74, 144, 226, 0.3);
         }
 
-        .data-stream::before {
-            content: attr(data-text);
-        }
+            .data-stream::before {
+                content: attr(data-text);
+            }
 
-        /* 添加首字符高亮效果 */
-        .data-stream::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0;
-            left: 0;
-            color: rgba(74, 144, 226, 0.8);
-            text-shadow: 0 0 8px rgba(74, 144, 226, 0.5);
-            animation: fadeOut 2s linear infinite;
-            width: 1ch;
-            overflow: hidden;
-        }
+            /* 添加首字符高亮效果 */
+            .data-stream::after {
+                content: attr(data-text);
+                position: absolute;
+                top: 0;
+                left: 0;
+                color: rgba(74, 144, 226, 0.8);
+                text-shadow: 0 0 8px rgba(74, 144, 226, 0.5);
+                animation: fadeOut 2s linear infinite;
+                width: 1ch;
+                overflow: hidden;
+            }
 
         @keyframes fadeOut {
-            0%, 30% { opacity: 1; }
-            100% { opacity: 0; }
+            0%, 30% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
         }
 
         @keyframes dataFlow {
             from {
                 transform: translateY(-100%);
             }
+
             to {
                 transform: translateY(100vh);
             }
@@ -530,9 +600,7 @@
             width: 80px;
             height: auto;
             opacity: 0;
-            animation: 
-                fadeIn 1s 7s forwards,
-                cornerLogoFloat 3s ease-in-out infinite;
+            animation: fadeIn 1s 7s forwards, cornerLogoFloat 3s ease-in-out infinite;
             z-index: 1000;
         }
 
@@ -540,6 +608,7 @@
             0%, 100% {
                 transform: translateY(0) rotate(0deg);
             }
+
             50% {
                 transform: translateY(-10px) rotate(360deg);
             }
@@ -591,13 +660,13 @@
                     <h2>Premission Verification System</h2>
                     <input type="text" id="username" placeholder="Codename" autocomplete="off">
                     <input type="password" id="password" placeholder="Password" autocomplete="off">
-                    <select id="clearance-level">
+                    <!-- <select id="clearance-level">
                         <option value="1">Level 1</option>
                         <option value="2">Level 2</option>
                         <option value="3">Level 3</option>
                         <option value="4">Level 4</option>
                         <option value="5">Level 5</option>
-                    </select>
+                    </select> -->
                     <button onclick="authenticate()">Access</button>
                 </div>
             </div>
@@ -605,6 +674,118 @@
     </div>
 
     <script>
+        // 用户数据库
+        /* const userDatabase = {
+            "user1": { password: "pass1", userlevel: 1 },
+            "user2": { password: "pass2", userlevel: 2 },
+            "user3": { password: "pass3", userlevel: 3 },
+            "user4": { password: "pass4", userlevel: 4 },
+            "user5": { password: "pass5", userlevel: 5 }
+        }; */
+
+        // 重定向函数
+        function redirectUserBasedOnLevel(userLevel) {
+            switch (userLevel) {
+                case 1:
+                    window.location.href = 'PDF1.html';
+                    break;
+                case 2:
+                    window.location.href = 'PDF2.html';
+                    break;
+                case 3:
+                    window.location.href = 'PDF3.html';
+                    break;
+                case 4:
+                    window.location.href = 'PDF4.html';
+                    break;
+                case 5:
+                    window.location.href = 'PDF5.html';
+                    break;
+                default:
+                    alert('Invalid user level');
+                    break;
+            }
+        }
+
+        async function authenticate() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (!username || !password) {
+                alert('Please enter complete verification information');
+                return;
+            }
+
+            try {
+                // 调用Vercel Serverless API
+                const response = await fetch('/api/auth', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // 保留原有过渡动画
+                    document.body.style.opacity = '0';
+                    document.body.style.transition = 'opacity 1s ease';
+
+                    // 根据后端返回的等级跳转
+                    setTimeout(() => {
+                        redirectUserBasedOnLevel(data.user.level);
+                    }, 1000);
+                } else {
+                    alert(`Verification failed: ${data.error || 'Unknown error'}`);
+                }
+            } catch (error) {
+                console.error('Authentication error:', error);
+                alert('System error, please try again later');
+            }
+        }
+
+        // 保留原有事件监听
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') authenticate();
+        });
+
+        // 保留输入框聚焦效果
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.style.transform = 'scale(1.02)';
+            });
+            input.addEventListener('blur', () => {
+                input.style.transform = 'scale(1)';
+            });
+        });
+        /*/ 登录验证函数 Abandoned.
+        function login(username, password) {
+            // 检查用户是否存在
+            if (userDatabase[username]) {
+                // 验证密码
+                if (userDatabase[username].password === password) {
+                    // 获取用户等级
+                    const userLevel = userDatabase[username].level;
+                    // 根据用户等级重定向
+                    redirectUserBasedOnLevel(userLevel);
+                } else {
+                    alert("Incorrect password");
+                }
+            } else {
+                alert("User not found");
+            }
+        }
+
+        // 登录按钮事件处理程序
+        document.getElementById('loginButton').addEventListener('click', function () {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // 调用登录函数
+            login(username, password);
+        });
+
         async function authenticate() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
@@ -620,15 +801,15 @@
                 // 这里添加一个简单的演示验证
                 // 在实际应用中，这里应该是与后端API的真实验证交互
                 const isValid = username.length > 3 && password.length > 3;
-                
+
                 if (isValid) {
                     // 添加过渡动画
                     document.body.style.opacity = '0';
                     document.body.style.transition = 'opacity 1s ease';
-                    
+
                     // 等待动画完成后跳转
                     setTimeout(() => {
-                        window.location.href = 'PDF1.html';
+                        redirectUserBasedOnLevel(clearanceLevel);
                     }, 1000);
                 } else {
                     alert('Verification failed: Insufficient permissions or incorrect verification information');
@@ -655,7 +836,7 @@
             input.addEventListener('blur', () => {
                 input.style.transform = 'scale(1)';
             });
-        });
+        }); */
 
         // 数据流动效果
         function createDataStream() {
@@ -668,7 +849,7 @@
             for (let i = 0; i < streamCount; i++) {
                 const stream = document.createElement('div');
                 stream.className = 'data-stream';
-                
+
                 // 生成随机字符串
                 let dataText = '';
                 const length = 8 + Math.floor(Math.random() * 12);  // 8-20个字符
@@ -689,11 +870,11 @@
                 const left = Math.random() * 100;  // 随机水平位置
 
                 stream.style.cssText = `
-                    left: ${left}%;
-                    animation-duration: ${duration}s;
-                    animation-delay: ${delay}s;
-                    font-size: ${12 + Math.random() * 4}px;  // 12-16px的随机大小
-                `;
+                        left: ${left}%;
+                        animation-duration: ${duration}s;
+                        animation-delay: ${delay}s;
+                        font-size: ${12 + Math.random() * 4}px;  // 12-16px的随机大小
+                    `;
 
                 container.appendChild(stream);
 
@@ -707,6 +888,15 @@
 
         // 初始化数据流
         createDataStream();
+
+        // 示例：获取用户等级的函数
+        function getUserLevel(username) {
+            // 这里添加获取用户等级的逻辑
+            // 返回1到5之间的数字
+            // 例如：
+            // return userDatabase[username].level;
+            return 1; // 这里返回示例值
+        }
     </script>
 </body>
 </html>
