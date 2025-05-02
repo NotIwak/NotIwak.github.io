@@ -3,175 +3,1015 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF Viewer</title>
+    <title>Document Viewer - Foundation Database</title>
     <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            font-family: Arial, sans-serif;
-            background: #f0f2f5;
+        :root {
+            --primary-color: #1a1f2c;    /* 深色背景 */
+            --accent-color: #4a90e2;     /* 保持蓝色强调色不变 */
+            --text-color: #e6e9f0;       /* 浅色文字 */
+            --border-color: #2d3446;     /* 深色边框 */
+            --light-bg: #1a1f2c;         /* 深色背景 */
+            --panel-bg: #232836;         /* 稍浅的深色面板背景 */
+            --header-bg: #1a1f2c;        /* 深色头部背景 */
         }
 
-        /* Loadin */
-        #splash {
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--primary-color);
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            color: var(--text-color);
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeIn 1s ease forwards;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 250px 1fr 300px;
+            height: 100vh;
+            gap: 1px;
+            background: rgba(74, 144, 226, 0.03);
+        }
+
+        /* 顶部标题栏 */
+        .header {
             position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: var(--header-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            padding: 0 20px;
+            box-shadow: 0 2px 15px rgba(74, 144, 226, 0.1);
+        }
+
+        .header-title {
+            color: var(--accent-color);
+            font-size: 1.8em;
+            font-weight: 600;
+            text-align: center;
+            letter-spacing: 2px;
+            position: relative;
+            padding: 0 15px;
+            text-shadow: none;
+            -webkit-text-stroke: 1px rgba(74, 144, 226, 0.5);
+        }
+
+        .header-title::before,
+        .header-title::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 30px;
+            height: 2px;
+            background: var(--accent-color);
+            transform: translateY(-50%);
+            box-shadow: 0 0 10px rgba(74, 144, 226, 0.5);
+            animation: lineWidth 2s infinite ease-in-out;
+        }
+
+        .header-title::before {
+            left: -40px;
+        }
+
+        .header-title::after {
+            right: -40px;
+        }
+
+        /* 添加装饰性角标 */
+        .header-title-container {
+            position: relative;
+            padding: 0 50px;
+        }
+
+        .header-title-container::before,
+        .header-title-container::after {
+            content: '[';
+            position: absolute;
+            color: var(--accent-color);
+            font-size: 2em;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.7;
+            text-shadow: 0 0 10px rgba(74, 144, 226, 0.3);
+            animation: bracketPulse 2s infinite ease-in-out;
+        }
+
+        .header-title-container::after {
+            content: ']';
+            right: 0;
+        }
+
+        .header-title-container::before {
+            left: 0;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% {
+                text-shadow: 
+                    0 0 10px rgba(74, 144, 226, 0.5),
+                    0 0 20px rgba(74, 144, 226, 0.3),
+                    0 0 30px rgba(74, 144, 226, 0.2);
+            }
+            50% {
+                text-shadow: 
+                    0 0 15px rgba(74, 144, 226, 0.6),
+                    0 0 25px rgba(74, 144, 226, 0.4),
+                    0 0 35px rgba(74, 144, 226, 0.3);
+            }
+        }
+
+        @keyframes lineWidth {
+            0%, 100% {
+                width: 30px;
+                opacity: 0.7;
+            }
+            50% {
+                width: 40px;
+                opacity: 1;
+            }
+        }
+
+        @keyframes bracketPulse {
+            0%, 100% {
+                transform: translateY(-50%) scale(1);
+                opacity: 0.7;
+            }
+            50% {
+                transform: translateY(-50%) scale(1.1);
+                opacity: 1;
+            }
+        }
+
+        /* 公告栏 */
+        .announcement-bar {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.95);
+            border-bottom: 1px solid var(--accent-color);
+            display: flex;
+            align-items: center;
+            padding: 0;
+            z-index: 1000;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .announcement-content {
+            white-space: nowrap;
+            color: #00ff00;
+            position: absolute;
+            animation: scrollText 20s linear infinite;
+            will-change: transform;
+            font-family: 'Consolas', monospace;
+            font-size: 16px;
+            text-shadow: 0 0 5px #00ff00;
+            letter-spacing: 1px;
+        }
+
+        @keyframes scrollText {
+            from {
+                transform: translateX(100vw);
+            }
+            to {
+                transform: translateX(-100%);
+            }
+        }
+
+        /* 左侧文件选择面板 */
+        .left-panel {
+            background: var(--primary-color);
+            padding: 20px;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            margin-top: 100px;
+        }
+
+        .file-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+
+        .file-item {
+            padding: 12px 15px;
+            margin: 5px 0;
+            background: var(--primary-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .file-item::before {
+            content: '📄';
+            margin-right: 8px;
+            font-size: 16px;
+        }
+
+        .file-item:hover {
+            background: rgba(74, 144, 226, 0.15);
+        }
+
+        .file-item.active {
+            background: rgba(74, 144, 226, 0.15);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            font-weight: 500;
+        }
+
+        /* 主要内容区 */
+        .main-content {
+            background: rgba(26, 31, 44, 0.95);
+            padding: 30px;
+            position: relative;
+            margin-top: 100px;
+            height: calc(100vh - 100px);
+            overflow: hidden;
+        }
+
+        /* PDF查看器 */
+        .pdf-viewer {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: var(--primary-color);
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .no-pdf-message {
+            position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            opacity: 0;
-            transition: opacity 1s;
+            color: var(--text-color);
+            opacity: 0.7;
         }
 
-        /* Main container */
-        .main-content {
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-
-        /* Modules*/
-        .module {
-            position: fixed;
-            background: white;
-            border-radius: 10px;
+        /* 右侧面板 */
+        .right-panel {
+            background: var(--primary-color);
             padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 1px solid var(--border-color);
+            margin-top: 100px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
         }
 
-        #text1 {
-            top: 20px;
-            left: 200px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        #logo {
-            top: 20px;
-            left: 20px;
-            width: 120px;
-            padding: 0;
-        }
-
-        #pdf-list {
-            top: 160px;
-            left: 20px;
-            width: 200px;
-            bottom: 20px;
-        }
-
-        #pdf-viewer {
-            top: 160px;
-            left: 240px;
-            right: 20px;
-            bottom: 20px;
-        }
-
-        #info-box {
+        /* 右下角文本框 */
+        .custom-text-box {
+            position: fixed;
             bottom: 20px;
             right: 20px;
-            width: 300px;
+            padding: 15px;
+            background: rgba(35, 40, 54, 0.95);
+            border: 1px solid var(--accent-color);
+            border-radius: 4px;
+            box-shadow: 0 0 15px rgba(74, 144, 226, 0.1);
+            max-width: 300px;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            color: var(--text-color);
+            font-size: 14px;
+            line-height: 1.5;
         }
 
-        /* PDFList */
-        .pdf-item {
-            padding: 12px;
-            margin: 8px 0;
+        /* 控制按钮 */
+        .control-button {
+            background: linear-gradient(45deg, 
+                rgba(74, 144, 226, 0.15), 
+                rgba(74, 144, 226, 0.2)
+            );
+            border: 1px solid rgba(74, 144, 226, 0.3);
+            color: #4a90e2;
+            padding: 12px 25px;
+            border-radius: 4px;
             cursor: pointer;
-            border-radius: 6px;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Consolas', monospace;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 14px;
+            margin: 20px;
+            backdrop-filter: blur(5px);
         }
 
-            .pdf-item:hover {
-                background: #f8f9fa;
-            }
+        .control-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(74, 144, 226, 0.2),
+                transparent
+            );
+            transition: 0.5s;
+        }
 
-            .pdf-item.active {
-                background: #e9f5ff;
-                border-left: 4px solid #1890ff;
+        .control-button::after {
+            content: '[ ]';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(74, 144, 226, 0.5);
+            font-size: 24px;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .control-button:hover {
+            background: rgba(74, 144, 226, 0.25);
+        }
+
+        .control-button:hover::before {
+            left: 100%;
+        }
+
+        .control-button span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .control-button .button-border {
+            position: absolute;
+            inset: 0;
+            border: 1px solid var(--accent-color);
+            opacity: 0;
+        }
+
+        .control-button:hover .button-border {
+            animation: borderPulse 1.5s linear infinite;
+            opacity: 1;
+        }
+
+        @keyframes borderPulse {
+            0%, 100% {
+                clip-path: inset(0 0 98% 0);
             }
+            25% {
+                clip-path: inset(0 98% 0 0);
+            }
+            50% {
+                clip-path: inset(98% 0 0 0);
+            }
+            75% {
+                clip-path: inset(0 0 0 98%);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scrollAnnouncement {
+            0% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        /* 修改加载屏幕样式 */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;  /* 改回白色背景 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-container {
+            width: 300px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .loading-logo-container {
+            position: absolute;
+            top: -200px;  /* 上移位置 */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+        }
+
+        .loading-logo {
+            width: auto;
+            height: auto;
+        }
+
+        .data-stream {
+            position: absolute;
+            width: 100%;
+            height: 40px;
+            top: -40px;
+            overflow: hidden;
+            opacity: 0.5;
+        }
+
+        .data-bit {
+            position: absolute;
+            color: #66a6ff;  /* 改为浅蓝色 */
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+            animation: fallDown 1s linear infinite;
+        }
+
+        /* 修改原有的fadeIn动画 */
+        .container, .header, .announcement-bar {
+            opacity: 0;
+            animation: none;
+        }
+
+        @keyframes progress {
+            0% {
+                width: 0;
+                filter: hue-rotate(0deg);
+            }
+            50% {
+                filter: hue-rotate(180deg);
+            }
+            100% {
+                width: 100%;
+                filter: hue-rotate(360deg);
+            }
+        }
+
+        @keyframes fallDown {
+            0% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+        }
+
+        /* 添加科幻动效样式 */
+        /* 背景网格 */
+        .grid-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(74, 144, 226, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(74, 144, 226, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* 粒子效果容器 */
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        /* 数据流效果 */
+        .data-lines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .data-line {
+            position: absolute;
+            background: rgba(74, 144, 226, 0.1);
+            animation: dataFlow 2s linear infinite;
+        }
+
+        /* 角落装饰 */
+        .corner-decoration {
+            position: fixed;
+            width: 100px;
+            height: 100px;
+            border: 2px solid rgba(74, 144, 226, 0.15);
+            pointer-events: none;
+        }
+
+        .corner-decoration.top-left {
+            top: 20px;
+            left: 20px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .corner-decoration.bottom-right {
+            bottom: 20px;
+            right: 20px;
+            border-left: none;
+            border-top: none;
+        }
+
+        /* 动画关键帧 */
+        @keyframes scanLine {
+            0% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+
+        @keyframes dataFlow {
+            0% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+        }
+
+        /* 确保主内容区域的背景半透明 */
+        .left-panel, .right-panel {
+            background: rgba(35, 40, 54, 0.95);
+            backdrop-filter: blur(5px);
+        }
+
+        .main-content {
+            background: rgba(26, 31, 44, 0.95);
+            backdrop-filter: blur(5px);
+        }
+
+        /* 动画关键帧 */
+        @keyframes float {
+            0% {
+                transform: translate(0, 0);
+                opacity: 0;
+            }
+            25% {
+                opacity: 1;
+            }
+            75% {
+                opacity: 1;
+            }
+            100% {
+                transform: translate(10px, 10px);
+                opacity: 0;
+            }
+        }
+
+        /* PDF边栏动效 */
+        .pdf-sidebar {
+            position: absolute;
+            width: 2px;
+            top: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom,
+                transparent,
+                rgba(74, 144, 226, 0.15),
+                rgba(74, 144, 226, 0.25),
+                rgba(74, 144, 226, 0.15),
+                transparent);
+            animation: sidebarPulse 2s infinite ease-in-out;
+        }
+
+        .pdf-sidebar.left {
+            left: 0;
+        }
+
+        .pdf-sidebar.right {
+            right: 0;
+        }
+
+        @keyframes sidebarPulse {
+            0%, 100% {
+                opacity: 0.3;
+            }
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes logoFloat {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* 修改加载条样式 */
+        .loading-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(102, 166, 255, 0.1);  /* 使用浅蓝色的透明版本 */
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+            margin: 10px 0;
+        }
+
+        .loading-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg,
+                #66a6ff,
+                #99c2ff
+            );  /* 使用浅蓝色渐变 */
+            animation: progress 3s ease-out forwards;
+            box-shadow: 0 0 10px #66a6ff;
+        }
+
+        .loading-segments {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .loading-segment {
+            width: 1px;
+            height: 100%;
+            background: rgba(102, 166, 255, 0.3);  /* 使用浅蓝色的透明版本 */
+            position: relative;
+        }
+
+        .loading-percentage {
+            position: absolute;
+            right: -40px;
+            top: -25px;
+            color: #66a6ff;  /* 改为浅蓝色 */
+            font-family: 'Consolas', monospace;
+            display: flex;
+            align-items: center;
+        }
+
+        .loading-percentage::before {
+            content: '[';
+            margin-right: 2px;
+            opacity: 0.7;
+        }
+
+        .loading-percentage::after {
+            content: ']';
+            margin-left: 2px;
+            opacity: 0.7;
+        }
+
+        /* 修改加载文字颜色为浅蓝色 */
+        .loading-text {
+            color: #66a6ff;  /* 改为浅蓝色 */
+            font-family: 'Consolas', monospace;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.2em;
+            opacity: 0.8;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .loading-text::before,
+        .loading-text::after {
+            content: '';
+            width: 20px;
+            height: 1px;
+            background: #66a6ff;  /* 改为浅蓝色 */
+            opacity: 0.5;
+        }
     </style>
 </head>
 <body>
-    <!-- Pre Load animation -->
-    <div id="splash">
-        <img src="scp1.gif" alt="Welcome" style="height: 200px;">
-        <h2 style="color: #666; margin-top: 20px;">Loading OS...</h2>
+    <!-- 添加背景动效元素 -->
+    <div class="grid-background"></div>
+    <div class="particles-container"></div>
+    <div class="data-lines"></div>
+    <div class="corner-decoration top-left"></div>
+    <div class="corner-decoration bottom-right"></div>
+
+    <!-- 加载屏幕 -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-container">
+            <div class="loading-logo-container">
+                <img src="Logo.png" alt="Logo" class="loading-logo" id="loadingLogo">
+            </div>
+            <div class="data-stream" id="dataStream"></div>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+                <div class="loading-segments">
+                    <div class="loading-segment"></div>
+                    <div class="loading-segment"></div>
+                    <div class="loading-segment"></div>
+                    <div class="loading-segment"></div>
+                    <div class="loading-segment"></div>
+                    <div class="loading-segment"></div>
+                    <div class="loading-segment"></div>
+                    <div class="loading-segment"></div>
+                    <div class="loading-segment"></div>
+                    <div class="loading-segment"></div>
+                </div>
+                <div class="loading-percentage">0%</div>
+            </div>
+            <div class="loading-text">SYSTEM INITIALIZATION</div>
+        </div>
     </div>
 
-    <!-- Main Part -->
-    <div class="main-content">
-        <!-- Top Left Logo -->
-        <a href="index.html" class="module" id="logo">
-            <img src="Logo.png" alt="Back to Main page" style="width: 100%">
-        </a>
+    <!-- 顶部标题栏 -->
+    <div class="header">
+        <div class="header-title-container">
+            <div class="header-title">Administrative Department Main Database</div>
+        </div>
+    </div>
 
-        <!-- PDF List -->
-        <div class="module" id="pdf-list">
-            <h3>File List</h3>
-            <div class="pdf-list">
-                <div class="pdf-item" data-file="doc1.pdf">Sector 3 Standard Protocol</div>
-                <div class="pdf-item" data-file="doc2.pdf">Event Protocol-1</div>
-                <div class="pdf-item" data-file="doc3.pdf">Council Protocol-1</div>
+    <!-- 公告栏 -->
+    <div class="announcement-bar">
+        <div class="announcement-content">
+            This is Foundation Administrative Department Database System.Welcome, authorized personnel----Site News: Please Do not pick up any donuts from SiD's Office.----"Writing this system is hell-Iwak"
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 左侧文件选择面板 -->
+        <div class="left-panel">
+            <h3 class="panel-title" style="color: var(--accent-color); margin-bottom: 20px;">Document List</h3>
+            <div class="file-list" id="fileList">
+                <!-- 文件列表将通过JavaScript动态生成 -->
             </div>
         </div>
 
-        <!-- PDF Viewer -->
-        <div class="module" id="pdf-viewer">
-            <embed id="pdf-frame" src="" type="application/pdf" width="100%" height="100%">
+        <!-- 主要内容区 -->
+        <div class="main-content">
+            <div class="pdf-sidebar left"></div>
+            <iframe class="pdf-viewer" id="pdfViewer"></iframe>
+            <div class="pdf-sidebar right"></div>
+            <div class="no-pdf-message" id="noPdfMessage" style="display: none;">
+                <h3>No Document Selected</h3>
+                <p>Please select a document from the list to view</p>
+            </div>
         </div>
 
-        <!-- Information Tab -->
-        <div class="module" id="info-box">
-            <h3>OS Info</h3>
-            <p>Current Version：0.0.1</p>
-            <p>Last Update：2025-05-01</p>
-        
-        <div class="module" id="text1">
-            <h2>Administrative Department-Main Database OS</h2>
-        </div>
-        
+        <!-- 右侧面板 -->
+        <div class="right-panel">
+            <button class="control-button">
+                <span>Return to MainPage</span>
+                <div class="button-border"></div>
+            </button>
         </div>
     </div>
 
+    <!-- 右下角自定义文本框 -->
+    <div class="custom-text-box">
+        Main DataBase OS
+        -Version 0.1
+    </div>
+
     <script>
-        // P1
-        window.onload = () => {
-            // Entry
-            setTimeout(() => {
-                document.getElementById('splash').style.opacity = 1;
-            }, 1000);
+        // 生成数据流效果
+        function createDataBit() {
+            const dataStream = document.getElementById('dataStream');
+            const bit = document.createElement('div');
+            bit.className = 'data-bit';
+            bit.style.left = Math.random() * 100 + '%';
+            bit.textContent = Math.random() > 0.5 ? '1' : '0';
+            dataStream.appendChild(bit);
 
-            // Hide Logo
-            setTimeout(() => {
-                document.getElementById('splash').style.opacity = 0;
+            // 移除完成动画的元素
+            bit.addEventListener('animationend', () => bit.remove());
+        }
 
+        // 更新加载百分比
+        function updateLoadingPercentage() {
+            const percentage = document.querySelector('.loading-percentage');
+            const progress = document.querySelector('.loading-progress');
+            let currentProgress = 0;
+            
+            const interval = setInterval(() => {
+                currentProgress++;
+                percentage.textContent = `${currentProgress}%`;
+                if (currentProgress >= 100) {
+                    clearInterval(interval);
+                }
+            }, 30);
+        }
+
+        // 初始化加载动画
+        function initializeLoading() {
+            updateLoadingPercentage();
+
+            // 3秒后显示主内容
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('loadingScreen');
+                loadingScreen.style.opacity = '0';
+                
+                // 显示主要内容
+                document.querySelector('.container').style.opacity = '1';
+                document.querySelector('.header').style.opacity = '1';
+                document.querySelector('.announcement-bar').style.opacity = '1';
+                
+                // 添加过渡效果
+                document.querySelector('.container').style.transition = 'opacity 1s ease';
+                document.querySelector('.header').style.transition = 'opacity 1s ease';
+                document.querySelector('.announcement-bar').style.transition = 'opacity 1s ease';
+
+                // 移除加载屏幕
                 setTimeout(() => {
-                    document.querySelector('.main-content').style.opacity = 1;
+                    loadingScreen.style.display = 'none';
+                }, 500);
+            }, 3000);
+        }
 
-                    // Check First PDF
-                    document.querySelector('.pdf-item').classList.add('active');
-                    loadPDF(document.querySelector('.pdf-item').dataset.file);
-                }, 1000); // Display Main Part
-            }, 3000); // 2s of waiting
+        // 初始化公告栏滚动
+        function initializeAnnouncement() {
+            const content = document.querySelector('.announcement-content');
+            
+            // 计算滚动持续时间（基于文本长度和视窗宽度）
+            function updateScrollDuration() {
+                const contentWidth = content.offsetWidth;
+                const viewportWidth = window.innerWidth;
+                const totalDistance = contentWidth + viewportWidth;
+                // 速度：每100像素1秒
+                const duration = totalDistance / 100;
+                content.style.animationDuration = `${duration}s`;
+            }
 
-            // PDFList click
-            document.querySelectorAll('.pdf-item').forEach(item => {
-                item.addEventListener('click', function () {
-                    // Remove all active status
-                    document.querySelectorAll('.pdf-item').forEach(i =>
-                        i.classList.remove('active'));
-                    // Set Current active
-                    this.classList.add('active');
-                    // Load PDF
-                    loadPDF(this.dataset.file);
+            // 初始化和窗口大小改变时更新持续时间
+            updateScrollDuration();
+            window.addEventListener('resize', updateScrollDuration);
+        }
+
+        // 添加粒子和数据流动效
+        function createParticles() {
+            const container = document.querySelector('.particles-container');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.cssText = `
+                    position: absolute;
+                    width: 2px;
+                    height: 2px;
+                    background: rgba(74, 144, 226, 0.5);
+                    left: ${Math.random() * 100}%;
+                    top: ${Math.random() * 100}%;
+                    animation: float ${2 + Math.random() * 3}s linear infinite;
+                `;
+                container.appendChild(particle);
+            }
+        }
+
+        function createDataLines() {
+            const container = document.querySelector('.data-lines');
+            for (let i = 0; i < 20; i++) {
+                const line = document.createElement('div');
+                line.className = 'data-line';
+                line.style.cssText = `
+                    left: ${Math.random() * 100}%;
+                    width: ${1 + Math.random() * 3}px;
+                    height: ${20 + Math.random() * 30}px;
+                    animation-delay: ${Math.random() * 2}s;
+                `;
+                container.appendChild(line);
+            }
+        }
+
+        // 初始化所有动效
+        function initializeEffects() {
+            createParticles();
+            createDataLines();
+        }
+
+        // 文件列表和PDF查看相关函数
+        function initializeFileList() {
+            const fileList = document.getElementById('fileList');
+            const pdfViewer = document.getElementById('pdfViewer');
+            const noPdfMessage = document.getElementById('noPdfMessage');
+            
+            // 创建10个文档项（可以根据实际需求调整）
+            for (let i = 1; i <= 10; i++) {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.textContent = `Ducument ${i}`;
+                fileItem.dataset.docNumber = i;
+                
+                fileItem.addEventListener('click', () => {
+                    // 移除其他项的active类
+                    document.querySelectorAll('.file-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    
+                    // 添加当前项的active类
+                    fileItem.classList.add('active');
+                    
+                    // 更新PDF查看器的源
+                    const docPath = `docs/doc${i}.pdf`;
+                    pdfViewer.src = docPath;
+                    pdfViewer.style.display = 'block';
+                    noPdfMessage.style.display = 'none';
+
+                    // 错误处理
+                    pdfViewer.onerror = () => {
+                        pdfViewer.style.display = 'none';
+                        noPdfMessage.style.display = 'block';
+                    };
                 });
-            });
+                
+                fileList.appendChild(fileItem);
+            }
+
+            // 默认选中第一个文档
+            const firstFile = fileList.querySelector('.file-item');
+            if (firstFile) {
+                firstFile.click();
+            }
         }
 
-        // PDF Load function
-        function loadPDF(filename) {
-            const viewer = document.getElementById('pdf-frame');
-            viewer.src = `docs/${filename}#toolbar=0&navpanes=0`;
-        }
+        // 页面加载完成后启动所有功能
+        window.addEventListener('load', () => {
+            initializeLoading();
+            initializeAnnouncement();
+            initializeEffects();
+            initializeFileList();
+        });
+
+        // 添加按钮动效
+        document.querySelector('.control-button').addEventListener('mouseover', function() {
+            this.style.transform = 'scale(1.05) translateY(-2px)';
+        });
+
+        document.querySelector('.control-button').addEventListener('mouseout', function() {
+            this.style.transform = 'scale(1) translateY(0)';
+        });
+
+        // 返回仪表板功能
+        document.querySelector('.control-button').addEventListener('click', () => {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 1s ease';
+            setTimeout(() => {
+                window.location.href = '1.html';
+            }, 1000);
+        });
     </script>
 </body>
-</html>
+</html> 
