@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Viewer</title>
+    <style>
+        :root {
+            --primary-color: #1a1f2c;    /* Background */
+            --accent-color: #4a90e2;     /* accent-color */
+            --text-color: #e6e9f0;       /* text-color */
+            --border-color: #2d3446;     /* border-color */
+            --light-bg: #1a1f2c;         /* LightBg */
+            --panel-bg: #232836;         /* Panel */
+            --header-bg: #1a1f2c;        /* header */
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--primary-color);
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            color: var(--text-color);
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeIn 1s ease forwards;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 250px 1fr 300px;
+            height: 100vh;
+            gap: 1px;
+            background: rgba(74, 144, 226, 0.03);
+        }
+
+        /* head title */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: var(--header-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            padding: 0 20px;
+            box-shadow: 0 2px 15px rgba(74, 144, 226, 0.1);
+        }
+
+        .header-title {
+            color: var(--accent-color);
+            font-size: 1.8em;
+            font-weight: 600;
+            text-align: center;
+            letter-spacing: 2px;
+            position: relative;
+            padding: 0 15px;
+            text-shadow: none;
+            -webkit-text-stroke: 1px rgba(74, 144, 226, 0.5);
+        }
+
+        .header-title::before,
+        .header-title::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 30px;
+            height: 2px;
+            background: var(--accent-color);
+            transform: translateY(-50%);
+            box-shadow: 0 0 10px rgba(74, 144, 226, 0.5);
+            animation: lineWidth 2s infinite ease-in-out;
+        }
+
+        .header-title::before {
+            left: -40px;
+        }
+
+        .header-title::after {
+            right: -40px;
+        }
+
+        /* conner */
+        .header-title-container {
+            position: relative;
+            padding: 0 50px;
+        }
+
+        .header-title-container::before,
+        .header-title-container::after {
+            content: '[';
+            position: absolute;
+            color: var(--accent-color);
+            font-size: 2em;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.7;
+            text-shadow: 0 0 10px rgba(74, 144, 226, 0.3);
+            animation: bracketPulse 2s infinite ease-in-out;
+        }
+
+        .header-title-container::after {
+            content: ']';
+            right: 0;
+        }
+
+        .header-title-container::before {
+            left: 0;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% {
+                text-shadow: 
+                    0 0 10px rgba(74, 144, 226, 0.5),
+                    0 0 20px rgba(74, 144, 226, 0.3),
+                    0 0 30px rgba(74, 144, 226, 0.2);
+            }
+            50% {
+                text-shadow: 
+                    0 0 15px rgba(74, 144, 226, 0.6),
+                    0 0 25px rgba(74, 144, 226, 0.4),
+                    0 0 35px rgba(74, 144, 226, 0.3);
+            }
+        }
+
+        @keyframes lineWidth {
+            0%, 100% {
+                width: 30px;
+                opacity: 0.7;
+            }
+            50% {
+                width: 40px;
+                opacity: 1;
+            }
+        }
+
+        @keyframes bracketPulse {
+            0%, 100% {
+                transform: translateY(-50%) scale(1);
+                opacity: 0.7;
+            }
+            50% {
+                transform: translateY(-50%) scale(1.1);
+                opacity: 1;
+            }
+        }
+
+        /* announcement bar */
+        .announcement-bar {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.95);
+            border-bottom: 1px solid var(--accent-color);
+            display: flex;
+            align-items: center;
+            padding: 0;
+            z-index: 1000;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .announcement-content {
+            white-space: nowrap;
+            color: #00ff00;
+            position: absolute;
+            animation: scrollText 20s linear infinite;
+            will-change: transform;
+            font-family: 'Consolas', monospace;
+            font-size: 16px;
+            text-shadow: 0 0 5px #00ff00;
+            letter-spacing: 1px;
+        }
+
+        @keyframes scrollText {
+            from {
+                transform: translateX(100vw);
+            }
+            to {
+                transform: translateX(-100%);
+            }
+        }
+
+        /* select panel */
+        .left-panel {
+            background: var(--primary-color);
+            padding: 20px;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            margin-top: 100px;
+        }
+
+        .file-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+
+        .file-item {
+            padding: 12px 15px;
+            margin: 5px 0;
+            background: var(--primary-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .file-item::before {
+            content: '📄';
+            margin-right: 8px;
+            font-size: 16px;
+        }
+
+        .file-item:hover {
+            background: rgba(74, 144, 226, 0.15);
+        }
+
+        .file-item.active {
+            background: rgba(74, 144, 226, 0.15);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            font-weight: 500;
+        }
+
+        /* Main PDF */
+        .main-content {
+            background: rgba(26, 31, 44, 0.95);
+            padding: 30px;
+            position: relative;
+            margin-top: 100px;
+            height: calc(100vh - 100px);
+            overflow: hidden;
+        }
+
+        /* PDF viewer */
+        .pdf-viewer {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: var(--primary-color);
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .no-pdf-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
+        /* right panel */
+        .right-panel {
+            background: var(--primary-color);
+            padding: 20px;
+            border-left: 1px solid var(--border-color);
+            margin-top: 100px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* BR text */
+        .custom-text-box {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px;
+            background: rgba(35, 40, 54, 0.95);
+            border: 1px solid var(--accent-color);
+            border-radius: 4px;
+            box-shadow: 0 0 15px rgba(74, 144, 226, 0.1);
+            max-width: 300px;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            color: var(--text-color);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Control button */
+        .control-button {
+            background: linear-gradient(45deg, 
+                rgba(74, 144, 226, 0.15), 
+                rgba(74, 144, 226, 0.2)
+            );
+            border: 1px solid rgba(74, 144, 226, 0.3);
+            color: #4a90e2;
+            padding: 12px 25px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Consolas', monospace;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 14px;
+            margin: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .control-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(74, 144, 226, 0.2),
+                transparent
+            );
+            transition: 0.5s;
+        }
+
+        .control-button::after {
+            content: '[ ]';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(74, 144, 226, 0.5);
+            font-size: 24px;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .control-button:hover {
+            background: rgba(74, 144, 226, 0.25);
+        }
+
+        .control-button:hover::before {
+            left: 100%;
+        }
+
+        .control-button span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .control-button .button-border {
+            position: absolute;
+            inset: 0;
+            border: 1px solid var(--accent-color);
+            opacity: 0;
+        }
+
+        .control-button:hover .button-border {
+            animation: borderPulse 1.5s linear infinite;
+            opacity: 1;
+        }
+
+        @keyframes borderPulse {
+            0%, 100% {
+                clip-path: inset(0 0 98% 0);
+            }
+            25% {
+                clip-path: inset(0 98% 0 0);
+            }
+            50% {
+                clip-path: inset(98% 0 0 0);
+            }
+            75% {
+                clip-path: inset(0 0 0 98%);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scrollAnnouncement {
+            0% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        /* Load screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;  /* White BAckground */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-container {
+            width: 300px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .loading-logo-container {
+            position: absolute;
+            top: -200px;  
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+        }
+
+        .loading-logo {
+            width: auto;
+            height: auto;
+        }
+
+        .data-stream {
+            position: absolute;
+            width: 100%;
+            height: 40px;
+            top: -40px;
+            overflow: hidden;
+            opacity: 0.5;
+        }
+
+        .data-bit {
+            position: absolute;
+            color: #66a6ff;  
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+            animation: fallDown 1s linear infinite;
+        }
+
+        /* Fade In */
+        .container, .header, .announcement-bar {
+            opacity: 0;
+            animation: none;
+        }
+
+        @keyframes progress {
+            0% {
+                width: 0;
+                filter: hue-rotate(0deg);
+            }
+            50% {
+                filter: hue-rotate(180deg);
+            }
+            100% {
+                width: 100%;
+                filter: hue-rotate(360deg);
+            }
+        }
+
+        @keyframes fallDown {
+            0% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+        }
+
+        /* Effects */
+        /* Background Grid */
+        .grid-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(74, 144, 226, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(74, 144, 226, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Particles */
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        /* Datalines */
+        .data-lines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .data-line {
+            position: absolute;
+            background: rgba(74, 144, 226, 0.1);
+            animation: dataFlow 2s linear infinite;
+        }
+
+        /* Corners */
+        .corner-decoration {
+            position: fixed;
+            width: 100px;
+            height: 100px;
+            border: 2px solid rgba(74, 144, 226, 0.15);
+            pointer-events: none;
+        }
+
+        .corner-decoration.top-left {
+            top: 20px;
+            left: 20px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .corner-decoration.bottom-right {
+            bottom: 20px;
+            right: 20px;
+            border-left: none;
+            border-top: none;
+        }
+
+        /* Keyframes*/
+        @keyframes scanLine {
+            0% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+
+        @keyframes dataFlow {
+            0% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+        }
+       
+        .left-panel, .right-panel {
+            background: rgba(35, 40, 54, 0.95);
+            backdrop-filter: blur(5px);
+        }
+
+        .main-content {
+            background: rgba(26, 31, 44, 0.95);
+            backdrop-filter: blur(5px);
+        }
+
+        /* Keyframes */
+        @keyframes float {
+            0% {
+                transform: translate(0, 0);
+                opacity: 0;
+            }
+            25% {
+                opacity: 1;
+            }
+            75% {
+                opacity: 1;
+            }
+            100% {
+                transform: translate(10px, 10px);
+                opacity: 0;
+            }
+        }
+
+        /* PDFsidebar */
+        .pdf-sidebar {
+            position: absolute;
+            width: 2px;
+            top: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom,
+                transparent,
+                rgba(74, 144, 226, 0.15),
+                rgba(74, 144, 226, 0.25),
+                rgba(74, 144, 226, 0.15),
+                transparent);
+            animation: sidebarPulse 2s infinite ease-in-out;
+        }
+
+        .pdf-sidebar.left {
+            left: 0;
+        }
+
+        .pdf-sidebar.right {
+            right: 0;
+        }
+
+        @keyframes sidebarPulse {
+            0%, 100% {
+                opacity: 0.3;
+            }
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes logoFloat {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Here to adjust loading bar */
+        .loading-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(102, 166, 255, 0.1);  /* Light blue */
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+            margin: 10px 0;
+        }
+
+        .loading-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg,
+                #66a6ff,
+                #99c2ff
+            );  /* Lightblue */
+            animation: progress 3s ease-out forwards;
+            box-shadow: 0 0 10px #66a6ff;
+        }
+
+        .loading-segments {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .loading-segment {
+            width: 1px;
+            height: 100%;
+            background: rgba(102, 166, 255, 0.3);  
+            position: relative;
+        }
+
+        .loading-percentage {
+            position: absolute;
+            right: -40px;
+            top: -25px;
+            color: #66a6ff;
+            font-family: 'Consolas', monospace;
+            display: flex;
+            align-items: center;
+        }
+
+        .loading-percentage::before {
+            content: '[';
+            margin-right: 2px;
+            opacity: 0.7;
+        }
+
+        .loading-percentage::after {
+            content: ']';
+            margin-left: 2px;
+            opacity: 0.7;
+        }
+
+        /* Adjust Loading Text Color */
+        .loading-text {
+            color: #66a6ff;  /* LightBlue */
+            font-family: 'Consolas', monospace;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.2em;
+            opacity: 0.8;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .loading-text::before,
+        .loading-text::after {
+            content: '';
+            width: 20px;
+            height: 1px;
+            background: #66a6ff;  /* Lightblue */
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Load all effects -->
+    <div class="grid-background"></div>
+    <div class="particles-container"></div>
+    <div class="data-lines"></div>
+    <div class="corner-decoration top-left"></div>
+    <div class="corner-decoration bottom-right"></div>
+
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-container">
+            <div class="loading-logo-container">
+                <img src="Logo.png" alt="Logo" class="loading-logo" id="loadingLogo">
+            </div>
+            <div class="data-stream" id="dataStream"></div>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+                <div class="loading-segments">
+                    <div class="loading-segment"></div>
+                    <div class="loading-segment"></div>
+                    <div class="loading-segment"></div>
+                    <div class="loading-segment"></div>
+                    <div class="loading-segment"></div>
+                    <div class="loading-segment"></div>
+                    <div class="loading-segment"></div>
+                    <div class="loading-segment"></div>
+                    <div class="loading-segment"></div>
+                    <div class="loading-segment"></div>
+                </div>
+                <div class="loading-percentage">0%</div>
+            </div>
+            <div class="loading-text">SYSTEM INITIALIZATION</div>
+        </div>
+    </div>
+
+    <!-- head title -->
+    <div class="header">
+        <div class="header-title-container">
+            <div class="header-title">Administrative Department Main Database</div>
+        </div>
+    </div>
+
+    <!-- announcement bar -->
+    <div class="announcement-bar">
+        <div class="announcement-content">
+            This is Foundation Administrative Department Clearance Level 4 Database System,Welcome, Authorized Personnel.----Site News: Please Do not pick up any donuts from SiD's Office.----Please Do Not Leak Any Information----
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- select panel -->
+        <div class="left-panel">
+            <h3 class="panel-title" style="color: var(--accent-color); margin-bottom: 20px;">Document List</h3>
+            <div class="file-list" id="fileList">
+                <!-- Javascrpit generate filelist -->
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="main-content">
+            <div class="pdf-sidebar left"></div>
+            <iframe class="pdf-viewer" id="pdfViewer"></iframe>
+            <div class="pdf-sidebar right"></div>
+            <div class="no-pdf-message" id="noPdfMessage" style="display: none;">
+                <h3>No Document Selected</h3>
+                <p>Please select a document from the list to view</p>
+            </div>
+        </div>
+
+        <!-- Right panel -->
+        <div class="right-panel">
+            <button class="control-button">
+                <span>Return to MainPage</span>
+                <div class="button-border"></div>
+            </button>
+        </div>
+    </div>
+
+    <!-- RB text -->
+    <div class="custom-text-box">
+        Main DataBase OS
+        -Version 0.1
+    </div>
+
+    <script>
+        // Dataflow
+        function createDataBit() {
+            const dataStream = document.getElementById('dataStream');
+            const bit = document.createElement('div');
+            bit.className = 'data-bit';
+            bit.style.left = Math.random() * 100 + '%';
+            bit.textContent = Math.random() > 0.5 ? '1' : '0';
+            dataStream.appendChild(bit);
+
+            // Remove effects
+            bit.addEventListener('animationend', () => bit.remove());
+        }
+
+        // Loading Bar percentage
+        function updateLoadingPercentage() {
+            const percentage = document.querySelector('.loading-percentage');
+            const progress = document.querySelector('.loading-progress');
+            let currentProgress = 0;
+            
+            const interval = setInterval(() => {
+                currentProgress++;
+                percentage.textContent = `${currentProgress}%`;
+                if (currentProgress >= 100) {
+                    clearInterval(interval);
+                }
+            }, 30);
+        }
+
+        // Loading effects
+        function initializeLoading() {
+            updateLoadingPercentage();
+
+            // 3s to Main content
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('loadingScreen');
+                loadingScreen.style.opacity = '0';
+                
+                // Display Main content
+                document.querySelector('.container').style.opacity = '1';
+                document.querySelector('.header').style.opacity = '1';
+                document.querySelector('.announcement-bar').style.opacity = '1';
+                
+                document.querySelector('.container').style.transition = 'opacity 1s ease';
+                document.querySelector('.header').style.transition = 'opacity 1s ease';
+                document.querySelector('.announcement-bar').style.transition = 'opacity 1s ease';
+
+                // Remove Loading screen
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 500);
+            }, 3000); //Adjust Loading time here
+        }
+
+        // initializeAnnouncement
+        function initializeAnnouncement() {
+            const content = document.querySelector('.announcement-content');
+            
+            // Time
+            function updateScrollDuration() {
+                const contentWidth = content.offsetWidth;
+                const viewportWidth = window.innerWidth;
+                const totalDistance = contentWidth + viewportWidth;
+                // 100px/s
+                const duration = totalDistance / 100;
+                content.style.animationDuration = `${duration}s`;
+            }
+
+            // updatescroolduration
+            updateScrollDuration();
+            window.addEventListener('resize', updateScrollDuration);
+        }
+
+        // Particles Effects
+        function createParticles() {
+            const container = document.querySelector('.particles-container');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.cssText = `
+                    position: absolute;
+                    width: 2px;
+                    height: 2px;
+                    background: rgba(74, 144, 226, 0.5);
+                    left: ${Math.random() * 100}%;
+                    top: ${Math.random() * 100}%;
+                    animation: float ${2 + Math.random() * 3}s linear infinite;
+                `;
+                container.appendChild(particle);
+            }
+        }
+
+        function createDataLines() {
+            const container = document.querySelector('.data-lines');
+            for (let i = 0; i < 20; i++) {
+                const line = document.createElement('div');
+                line.className = 'data-line';
+                line.style.cssText = `
+                    left: ${Math.random() * 100}%;
+                    width: ${1 + Math.random() * 3}px;
+                    height: ${20 + Math.random() * 30}px;
+                    animation-delay: ${Math.random() * 2}s;
+                `;
+                container.appendChild(line);
+            }
+        }
+
+        // initializeEffects
+        function initializeEffects() {
+            createParticles();
+            createDataLines();
+        }
+
+        // File List Function
+        const customDocuments = {
+            // Format: "Display name": "File Location"
+            "ARMED WAIVER CL-1": "docs/ARMED WAIVER.pdf",
+            "Explanations on S3 Protocol CL-1": "docs/Explanations on S3 Protocol.pdf",
+            "New Site Policy CL-1": "docs/New Site Policy.pdf",
+            "New Site Policy-2 CL-1": "docs/New Site Policy-2.pdf",
+            "Hostile Forces' Routine Activity Protocol CL-1": "docs/Hostile Forces' Routine Activity Protocol.pdf",
+            "OFFICIAL SV EDA REFORM CL-1": "docs/OFFICIAL SV EDA REFORM.pdf",
+            "Pre-Test Authorization Protocol CL-1": "docs/Pre-Test Authorization Protocol.pdf",
+            "Sector-3 Operating Protocol-ScD CL-1": "docs/Sector-3 Operating Protocol-ScD.pdf",
+            "Standard Protocol of Sector 3 Checkpoint CL-1": "docs/Standard Protocol of Sector 3 Checkpoint.pdf",
+            "Site Virtus Code of Ethics CL-1": "docs/Site Virtus Code of Ethics.pdf",
+            "Site-Virtus Game Rules CL-1": "docs/Site-Virtus Game Rules.pdf",
+            "TA event Protocol CL-1": "docs/TA event Protocol.pdf",
+            "Anomaly Classification Protocol CL-2": "docs/Anomaly Classification Protocol.pdf",
+            "Conference Log 1 CL-2": "docs/Conference Log 1.pdf",
+            "Conference Log 2 CL-2": "docs/Conference Log 2.pdf",
+            "Tesla Gate Installation and Usage Protocol CL-3": "docs/Tesla Gate Installation and Usage Protocol.pdf",
+            "Brief SCPs Introduction CL-3": "docs/Brief Introduction of SCPs Contained In Site.pdf",
+            
+            // Add files here
+        };
+
+        function initializeFileList() {
+            const fileList = document.getElementById('fileList');
+            const pdfViewer = document.getElementById('pdfViewer');
+            const noPdfMessage = document.getElementById('noPdfMessage');
+
+            // Empty Current List
+            fileList.innerHTML = '';
+
+            // Search for Files
+            Object.entries(customDocuments).forEach(([displayName, filePath]) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.textContent = displayName;
+                fileItem.dataset.filePath = filePath; // Current Path
+
+                fileItem.addEventListener('click', () => {
+                    // remove other active status
+                    document.querySelectorAll('.file-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+
+                    // Set current active
+                    fileItem.classList.add('active');
+
+                    // Load PDF
+                    pdfViewer.src = filePath;
+                    pdfViewer.style.display = 'block';
+                    noPdfMessage.style.display = 'none';
+
+                    pdfViewer.onerror = () => {
+                        pdfViewer.style.display = 'none';
+                        noPdfMessage.style.display = 'block';
+                    };
+                });
+
+                fileList.appendChild(fileItem);
+            });
+
+            // Load first PDF at first
+            const firstFile = fileList.querySelector('.file-item');
+            if (firstFile) firstFile.click();
+        }
+
+        // Active all Contents after loading
+        window.addEventListener('load', () => {
+            initializeLoading();
+            initializeAnnouncement();
+            initializeEffects();
+            initializeFileList();
+        });
+
+        // Effects for button
+        document.querySelector('.control-button').addEventListener('mouseover', function() {
+            this.style.transform = 'scale(1.05) translateY(-2px)';
+        });
+
+        document.querySelector('.control-button').addEventListener('mouseout', function() {
+            this.style.transform = 'scale(1) translateY(0)';
+        });
+
+        // back to Login Page
+        document.querySelector('.control-button').addEventListener('click', () => {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 1s ease';
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 
