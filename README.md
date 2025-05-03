@@ -2,13 +2,12 @@
 ## This is the place for AD Database Project.
 ### This place just for Testing. Only post tested files.
 
-# Also
 ## Disclaimer
 
-## ALL CONTENTS ARE BASED ON SCP UNIVERSE
+### ALL CONTENTS ARE BASED ON SCP UNIVERSE
 -Their Main WiKi: https://scp-wiki.wikidot.com/
 
-## This project is released under the **Creative Commons Attribution-ShareAlike 4.0 International (CC-BY-SA 4.0)** license:
+### This project is released under the **Creative Commons Attribution-ShareAlike 4.0 International (CC-BY-SA 4.0)** license:
 - **You are free to**: Share and adapt this project, including for commercial purposes
 - **You must**: Provide attribution and share derivatives under the same license
 - **Full license**: https://creativecommons.org/licenses/by-sa/4.0/
