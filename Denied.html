@@ -26,7 +26,7 @@
             position: relative;
         }
 
-        /* 警报波纹特效 */
+        /* red pulse */
         .alert-pulse {
             position: absolute;
             width: 300vw;
@@ -36,7 +36,7 @@
             z-index: -1;
         }
 
-        /* 网格背景 */
+        /* background grid */
         .grid-pattern {
             position: absolute;
             width: 100%;
@@ -46,7 +46,7 @@
             z-index: -2;
         }
 
-        /* 主警告容器 */
+        /* Main container */
         .denied-container {
             text-align: center;
             border: 2px solid var(--red-alert);
@@ -60,7 +60,7 @@
             backdrop-filter: blur(5px);
         }
 
-            /* 边框闪烁动画 */
+            /* blink light */
             .denied-container::before {
                 content: '';
                 position: absolute;
@@ -72,7 +72,7 @@
                 animation: borderFlash 1.5s infinite;
             }
 
-        /* 标题样式 */
+        /* title */
         h2 {
             color: var(--red-alert);
             font-size: 2.5rem;
@@ -82,7 +82,7 @@
             animation: textFlicker 1s infinite alternate;
         }
 
-        /* 原因文本 */
+        /* Reason text */
         .reason {
             color: white;
             font-size: 1.2rem;
@@ -90,7 +90,7 @@
             text-shadow: 0 0 5px white;
         }
 
-        /* 权限等级显示 */
+        /* display level */
         .clearance {
             display: inline-block;
             padding: 0.3rem 1rem;
@@ -100,7 +100,7 @@
             font-family: 'Consolas', monospace;
         }
 
-        /* 返回按钮 */
+        /* return button */
         .return-btn {
             background: transparent;
             color: var(--blue-accent);
@@ -131,7 +131,7 @@
                 animation: btnScan 3s infinite linear;
             }
 
-        /* 数据流特效 */
+        /* dataflow- */
         .data-stream {
             position: absolute;
             top: 0;
@@ -151,7 +151,7 @@
             animation: fallDown linear infinite;
         }
 
-        /* 动画定义 */
+        /* keyframes */
         @keyframes pulse {
             0% {
                 transform: scale(0.8);
@@ -216,21 +216,20 @@
     </style>
 </head>
 <body>
-    <!-- 背景特效 -->
+    <!-- backgrounds -->
     <div class="alert-pulse"></div>
     <div class="grid-pattern"></div>
 
-    <!-- 数据流特效 -->
+    <!-- dataflow effect -->
     <div class="data-stream" id="dataStream"></div>
 
-    <!-- 主内容 -->
+    <!-- main content -->
     <div class="denied-container">
         <h2>⛔ ACCESS DENIED</h2>
         <div class="reason" id="reason">Reason：Unauthorized Access</div>
 
         <div class="clearance">
-            Your Clearance Level: <span id="userLevel"></span> |
-            Requested Level: <span id="requiredLevel"></span>
+            Your Clearance Level Didn't Meeting The Required Level
         </div>
 
         <p style="margin-top: 1.5rem; color: #aaa;">
@@ -247,7 +246,7 @@
     </div>
 
     <script>
-        // 动态生成数据流
+        // dataflow
         function createDataStream() {
             const chars = "01%&$#@*";
             const container = document.getElementById('dataStream');
@@ -282,14 +281,12 @@
             }
         }
 
-        // 显示实际的权限信息
         function showAuthInfo() {
             const auth = JSON.parse(sessionStorage.getItem('scp_auth'));
             const reasonEl = document.getElementById('reason');
             const userLevelEl = document.getElementById('userLevel');
             const requiredLevelEl = document.getElementById('requiredLevel');
 
-            // 从页面获取要求等级
             const requiredLevel = document.documentElement.dataset.minLevel || '5';
             requiredLevelEl.textContent = 'Lv.' + requiredLevel;
 
@@ -302,12 +299,12 @@
             }
         }
 
-        // 初始化
+        // Start effect
         document.addEventListener('DOMContentLoaded', () => {
             createDataStream();
             showAuthInfo();
 
-            // 每10秒刷新一次数据流
+            // 10/dataflow
             setInterval(() => {
                 document.getElementById('dataStream').innerHTML = '';
                 createDataStream();
