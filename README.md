@@ -21,6 +21,7 @@
 ### Technical Disclaimer:
 - No 100% system stability guarantee
 - PDF rendering depends on browser compatibility
+- PDF Reader or even the page might can't work on mobile/Ipad(adding support of them still on planning phase)
 
 ### Users agree:
 - Not to use the system for illegal purposes
