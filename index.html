@@ -727,7 +727,13 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    // remain old move
+
+                    sessionStorage.setItem('scp_auth', JSON.stringify({
+                        username: username,
+                        level: data.user.level,
+                        loginTime: Date.now() // Record Login Time
+                    }));
+
                     document.body.style.opacity = '0';
                     document.body.style.transition = 'opacity 1s ease';
 
@@ -759,84 +765,6 @@
                 input.style.transform = 'scale(1)';
             });
         });
-        /*/  Abandoned.
-        function login(username, password) {
-            // Non
-            if (userDatabase[username]) {
-                // a
-                if (userDatabase[username].password === password) {
-                    // a
-                    const userLevel = userDatabase[username].level;
-                    // a
-                    redirectUserBasedOnLevel(userLevel);
-                } else {
-                    alert("Incorrect password");
-                }
-            } else {
-                alert("User not found");
-            }
-        }
-
-        // a
-        document.getElementById('loginButton').addEventListener('click', function () {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-
-            // a
-            login(username, password);
-        });
-
-        async function authenticate() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const clearanceLevel = document.getElementById('clearance-level').value;
-
-            if (!username || !password) {
-                alert('Please enter complete verification information');
-                return;
-            }
-
-            // a
-            try {
-                // a
-                // a
-                const isValid = username.length > 3 && password.length > 3;
-
-                if (isValid) {
-                    // a
-                    document.body.style.opacity = '0';
-                    document.body.style.transition = 'opacity 1s ease';
-
-                    // redirect b
-                    setTimeout(() => {
-                        redirectUserBasedOnLevel(clearanceLevel);
-                    }, 1000);
-                } else {
-                    alert('Verification failed: Insufficient permissions or incorrect verification information');
-                }
-            } catch (error) {
-                console.error('Authentication error:', error);
-                alert('System error, please try again later');
-            }
-        }
-
-        // suppport of keyboard-
-        document.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                authenticate();
-            }
-        });
-
-        // focus effect
-        const inputs = document.querySelectorAll('input, select');
-        inputs.forEach(input => {
-            input.addEventListener('focus', () => {
-                input.style.transform = 'scale(1.02)';
-            });
-            input.addEventListener('blur', () => {
-                input.style.transform = 'scale(1)';
-            });
-        }); */
 
         // dataflow
         function createDataStream() {
