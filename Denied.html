@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Denied</title>
+    <style>
+        :root {
+            --red-alert: #ff2a2a;
+            --blue-accent: #4a90e2;
+            --dark-bg: #0d1117;
+            --text-glow: 0 0 10px currentColor;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--dark-bg);
+            font-family: 'Courier New', monospace;
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* 警报波纹特效 */
+        .alert-pulse {
+            position: absolute;
+            width: 300vw;
+            height: 300vh;
+            background: radial-gradient(circle, rgba(255,42,42,0.1) 0%, transparent 70%);
+            animation: pulse 3s infinite ease-out;
+            z-index: -1;
+        }
+
+        /* 网格背景 */
+        .grid-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(rgba(74, 144, 226, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(74, 144, 226, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -2;
+        }
+
+        /* 主警告容器 */
+        .denied-container {
+            text-align: center;
+            border: 2px solid var(--red-alert);
+            padding: 3rem;
+            border-radius: 5px;
+            max-width: 600px;
+            background: rgba(13, 17, 23, 0.9);
+            box-shadow: 0 0 30px rgba(255,42,42,0.5);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+
+            /* 边框闪烁动画 */
+            .denied-container::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: var(--red-alert);
+                animation: borderFlash 1.5s infinite;
+            }
+
+        /* 标题样式 */
+        h2 {
+            color: var(--red-alert);
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            text-shadow: var(--text-glow);
+            letter-spacing: 2px;
+            animation: textFlicker 1s infinite alternate;
+        }
+
+        /* 原因文本 */
+        .reason {
+            color: white;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 5px white;
+        }
+
+        /* 权限等级显示 */
+        .clearance {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            background: rgba(255,42,42,0.2);
+            border: 1px dashed var(--red-alert);
+            margin: 1rem 0;
+            font-family: 'Consolas', monospace;
+        }
+
+        /* 返回按钮 */
+        .return-btn {
+            background: transparent;
+            color: var(--blue-accent);
+            border: 1px solid var(--blue-accent);
+            padding: 0.8rem 2rem;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+        }
+
+            .return-btn:hover {
+                background: rgba(74, 144, 226, 0.2);
+                text-shadow: 0 0 10px var(--blue-accent);
+            }
+
+            .return-btn::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: linear-gradient( to bottom right, transparent 45%, rgba(74, 144, 226, 0.3) 50%, transparent 55% );
+                animation: btnScan 3s infinite linear;
+            }
+
+        /* 数据流特效 */
+        .data-stream {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        .data-bit {
+            position: absolute;
+            color: rgba(74, 144, 226, 0.7);
+            font-family: 'Consolas', monospace;
+            font-size: 16px;
+            animation: fallDown linear infinite;
+        }
+
+        /* 动画定义 */
+        @keyframes pulse {
+            0% {
+                transform: scale(0.8);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        @keyframes borderFlash {
+            0%, 100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        @keyframes textFlicker {
+            0% {
+                opacity: 0.8;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes btnScan {
+            0% {
+                transform: rotate(45deg) translate(-30%, -30%);
+            }
+
+            100% {
+                transform: rotate(45deg) translate(70%, 70%);
+            }
+        }
+
+        @keyframes fallDown {
+            0% {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 背景特效 -->
+    <div class="alert-pulse"></div>
+    <div class="grid-pattern"></div>
+
+    <!-- 数据流特效 -->
+    <div class="data-stream" id="dataStream"></div>
+
+    <!-- 主内容 -->
+    <div class="denied-container">
+        <h2>⛔ ACCESS DENIED</h2>
+        <div class="reason" id="reason">Reason：Unauthorized Access</div>
+
+        <div class="clearance">
+            Your Clearance Level: <span id="userLevel"></span> |
+            Requested Level: <span id="requiredLevel"></span>
+        </div>
+
+        <p style="margin-top: 1.5rem; color: #aaa;">
+            This Unauthorized Acess Has Been Recorded
+        </p>
+
+        <button class="return-btn" onclick="location.href='index.html'">
+            [ Return To Verification ]
+        </button>
+
+        <div style="margin-top: 2rem; font-size: 0.8rem; color: #666;">
+            Foundation Database Security System v0.0.1
+        </div>
+    </div>
+
+    <script>
+        // 动态生成数据流
+        function createDataStream() {
+            const chars = "01%&$#@*";
+            const container = document.getElementById('dataStream');
+
+            for (let i = 0; i < 50; i++) {
+                const bit = document.createElement('div');
+                bit.className = 'data-bit';
+                bit.textContent = chars[Math.floor(Math.random() * chars.length)];
+                bit.style.left = Math.random() * 100 + '%';
+                bit.style.animationDuration = (3 + Math.random() * 5) + 's';
+                bit.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(bit);
+
+                bit.addEventListener('animationend', () => {
+                    bit.remove();
+                    createNewBit();
+                });
+            }
+
+            function createNewBit() {
+                const newBit = document.createElement('div');
+                newBit.className = 'data-bit';
+                newBit.textContent = chars[Math.floor(Math.random() * chars.length)];
+                newBit.style.left = Math.random() * 100 + '%';
+                newBit.style.animationDuration = (3 + Math.random() * 5) + 's';
+                container.appendChild(newBit);
+
+                newBit.addEventListener('animationend', () => {
+                    newBit.remove();
+                    createNewBit();
+                });
+            }
+        }
+
+        // 显示实际的权限信息
+        function showAuthInfo() {
+            const auth = JSON.parse(sessionStorage.getItem('scp_auth'));
+            const reasonEl = document.getElementById('reason');
+            const userLevelEl = document.getElementById('userLevel');
+            const requiredLevelEl = document.getElementById('requiredLevel');
+
+            // 从页面获取要求等级
+            const requiredLevel = document.documentElement.dataset.minLevel || '5';
+            requiredLevelEl.textContent = 'Lv.' + requiredLevel;
+
+            if (auth) {
+                userLevelEl.textContent = 'Lv.' + auth.level;
+                reasonEl.textContent = 'Reason：Not Meeting The Required Level (Lv.' + auth.level + ' < Lv.' + requiredLevel + ')';
+                userLevelEl.style.color = '#ff2a2a';
+            } else {
+                reasonEl.textContent = 'Reason：Unauthorized Access';
+            }
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            createDataStream();
+            showAuthInfo();
+
+            // 每10秒刷新一次数据流
+            setInterval(() => {
+                document.getElementById('dataStream').innerHTML = '';
+                createDataStream();
+            }, 10000);
+        });
+    </script>
+</body>
+</html>
